@@ -1,3 +1,6 @@
+using Assignment_1_API.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Assignment_1_API
 {
     public class Program
