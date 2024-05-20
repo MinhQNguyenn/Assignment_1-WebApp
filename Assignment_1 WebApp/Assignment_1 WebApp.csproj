@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Assignment_1_WebApp</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Assignment_1 API\Assignment_1 API.csproj" />
+  </ItemGroup>
 	
 	
 
