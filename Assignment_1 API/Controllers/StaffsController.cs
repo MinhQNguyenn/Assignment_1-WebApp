@@ -24,10 +24,10 @@ namespace Assignment_1_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
-          if (_context.Staffs == null)
-          {
-              return NotFound();
-          }
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
             return await _context.Staffs.ToListAsync();
         }
 
@@ -35,10 +35,10 @@ namespace Assignment_1_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
-          if (_context.Staffs == null)
-          {
-              return NotFound();
-          }
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
             var staff = await _context.Staffs.FindAsync(id);
 
             if (staff == null)
@@ -85,10 +85,10 @@ namespace Assignment_1_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Staff>> PostStaff(Staff staff)
         {
-          if (_context.Staffs == null)
-          {
-              return Problem("Entity set 'MyStoreContext.Staffs'  is null.");
-          }
+            if (_context.Staffs == null)
+            {
+                return Problem("Entity set 'MyStoreContext.Staffs'  is null.");
+            }
             _context.Staffs.Add(staff);
             await _context.SaveChangesAsync();
 
@@ -116,6 +116,28 @@ namespace Assignment_1_API.Controllers
         }
 
         private bool StaffExists(int id)
+        {
+            return (_context.Staffs?.Any(e => e.StaffId == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Staff>>> Search([FromQuery] string pName)
+        {
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.Staffs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(pName))
+            {
+                query = query.Where(p => p.Name.Contains(pName));
+            }
+
+            return await query.ToListAsync();
+        }
+        private bool StaffsExists(int id)
         {
             return (_context.Staffs?.Any(e => e.StaffId == id)).GetValueOrDefault();
         }
