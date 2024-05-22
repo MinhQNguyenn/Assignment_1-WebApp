@@ -114,7 +114,28 @@ namespace Assignment_1_API.Controllers
 
             return NoContent();
         }
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Product>>> Search([FromQuery] string pName, [FromQuery] decimal? unitPrice)
+        {
+            if (_context.Products == null)
+            {
+                return NotFound();
+            }
 
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(pName))
+            {
+                query = query.Where(p => p.ProductName.Contains(pName));
+            }
+
+            if (unitPrice.HasValue)
+            {
+                query = query.Where(p => p.UnitPrice == unitPrice.Value);
+            }
+
+            return await query.ToListAsync();
+        }
         private bool ProductExists(int id)
         {
             return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
