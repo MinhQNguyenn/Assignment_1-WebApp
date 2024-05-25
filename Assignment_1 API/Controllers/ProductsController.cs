@@ -115,7 +115,7 @@ namespace Assignment_1_API.Controllers
             return NoContent();
         }
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Product>>> Search([FromQuery] string pName, [FromQuery] decimal? unitPrice)
+        public async Task<ActionResult<IEnumerable<Product>>> Search([FromQuery] string? pName, [FromQuery] decimal? unitPrice)
         {
             if (_context.Products == null)
             {

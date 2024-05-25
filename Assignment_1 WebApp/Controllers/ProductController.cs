@@ -19,13 +19,15 @@ namespace Assignment_1_WebApp.Controllers
             client.DefaultRequestHeaders.Accept.Add(contentType);
             ProductApiUrl = "https://localhost:7271/api/Products";
         }
-        public async Task<IActionResult> Index(string pName = null, decimal? unitPrice = null)
+        public async Task<IActionResult> Index(string? pName = null, int? unitPrice = null)
         {
             HttpResponseMessage response;
-            if (!string.IsNullOrEmpty(pName) || unitPrice.HasValue)
+            if (!string.IsNullOrEmpty(pName) || unitPrice != null ||unitPrice.HasValue)
             {
                 var query = $"?pName={pName}&unitPrice={unitPrice}";
                 response = await client.GetAsync($"{ProductApiUrl}/search{query}");
+                ViewBag.name = pName;   
+                ViewBag.unitPrice = unitPrice;
             }
             else
             {
@@ -56,18 +58,20 @@ namespace Assignment_1_WebApp.Controllers
         }
         public async Task<IActionResult> Delete(int? id)
         {
-            HttpResponseMessage response = await client.GetAsync(ProductApiUrl);
-            string strData = await response.Content.ReadAsStringAsync();
+            var url = $"{ProductApiUrl}/{id}";
 
-            var options = new JsonSerializerOptions
+            // Send DELETE request to the API
+            var response = await client.DeleteAsync(url);
+
+            // Check if the response indicates success
+            if (response.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<Product> listProducts = JsonSerializer.Deserialize<List<Product>>(strData, options);
-            var product = listProducts.FirstOrDefault(p => p.ProductId == id);
-
-
-            return View(product);
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return Problem("Error deleting the product.");
+            }
         }
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

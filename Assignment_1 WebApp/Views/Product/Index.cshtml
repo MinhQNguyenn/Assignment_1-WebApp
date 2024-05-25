@@ -4,19 +4,21 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Product Management</h1>
 
 <p>
     <a class="btn btn-success" asp-action="Create">Create New</a>
 </p>
 <p>
     <form asp-action="Index" asp-controller="Product">  
-        Name: <input type="text" name="pName" />
-        UnitPrice: <input type="number"/>
+        Name: <input type="text" name="pName" value="@ViewBag.name" />
+        UnitPrice: <input type="number" name="unitPrice" value="@ViewBag.unitPrice"/>
         <input type="submit" value="Search" />
     </form>
 </p>
-
+<p>
+    Number of products found: @Model.Count()
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -44,9 +46,17 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                    <a asp-action="Delete" asp-route-id="@item.ProductId" onclick="confirmDelete(event)">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<script type="text/javascript">
+    function confirmDelete(event) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to delete this product?")) {
+            window.location.href = event.currentTarget.href;
+        }
+    }
+</script>
