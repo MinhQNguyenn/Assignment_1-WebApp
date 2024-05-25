@@ -8,8 +8,17 @@ namespace Assignment_1_WebApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = "MyApp.Session"; // Set a custom cookie name
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the session timeout
+            });
             var app = builder.Build();
+            
+            
+
+           
+            app.UseSession();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -23,12 +32,14 @@ namespace Assignment_1_WebApp
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Login}/{action=Login}/{id?}");
+            });
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

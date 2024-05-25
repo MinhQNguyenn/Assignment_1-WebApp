@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Assignment_1_API.Models.Staff>
+
+@{
+    ViewData["Title"] = "Index";
+    int userRole = 0; // Default to 0 (no access)
+
+    
+}
+
+
+    <a asp-action="Create">Create New</a>
+
+<h1>StaffList</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
+                
+                
+                    @if (item.Role != 1)
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.StaffId">Delete</a>
+                    }
+               
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>
