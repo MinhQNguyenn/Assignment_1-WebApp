@@ -14,8 +14,20 @@ namespace Assignment_1_WebApp.Controllers
         public async Task<IActionResult> Login(string username,string password) {
             try
             {
+                IConfiguration config = new ConfigurationBuilder()
+      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+      .Build();
                 var httpClient = new HttpClient();
                 var response = await httpClient.GetAsync("https://localhost:7271/api/Staffs");
+                string adminUsername = config["Account:Name"];
+                string adminPassword = config["Account:Password"];
+
+                if (adminUsername.Equals(username) && adminPassword.Equals(password))
+                {
+                    HttpContext.Session.SetInt32("UserId", 0);
+                    HttpContext.Session.SetInt32("UserRole", 1);
+                    return RedirectToAction("Main", "Staffs", new Staff(0, adminUsername, adminPassword, 1));
+                }
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();

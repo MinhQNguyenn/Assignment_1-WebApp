@@ -16,16 +16,16 @@
 {
     <a asp-action="Index" asp-controller="Product">Manage Product</a> <br />
     <a asp-action="Index" asp-controller="Staffs">Manage Staffs</a> <br />
-    <a asp-action="Report" asp-controller="Report">Report</a>
+    <a asp-action="Index" asp-controller="Home">Report</a>
     <br />
-    <a asp-action="Edit" asp-route-id="@Model?.StaffId">Update Profile</a>
+    <a asp-action="Edit" asp-controller="Staffs" asp-route-id="@Model?.StaffId">Update Profile</a>
     <br />
 }
 else
 {
     <a asp-action="Index">Manage Order</a>
     <br />
-    <a asp-action="Report" asp-controller="Report">Report</a>
+    <a asp-action="Index" asp-controller="Home">Report</a>
     <br />
     <a asp-action="Edit" asp-route-id="@Model?.StaffId">Update Profile</a>
     <br />
