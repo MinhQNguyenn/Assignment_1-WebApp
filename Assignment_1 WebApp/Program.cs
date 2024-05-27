@@ -1,3 +1,6 @@
+using Assignment_1_API.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Assignment_1_WebApp
 {
     public class Program
@@ -5,9 +8,10 @@ namespace Assignment_1_WebApp
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Services.AddDbContext<MyStoreContext>();
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+           
             builder.Services.AddSession(options =>
             {
                 options.Cookie.Name = "MyApp.Session"; // Set a custom cookie name
