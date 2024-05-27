@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Index";
+    int userRole = 0; // Default to 0 (no access)
+
+    
 }
 
 <h1>Index</h1>
@@ -37,25 +40,28 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
+        <tr>
+            <td>
                     @Html.DisplayFor(modelItem => item.StaffId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Password)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Role)
-                </td>
-                <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Role)
+            </td>
+            <td>
                     <a asp-action="Edit" asp-route-id="@item.StaffId">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.StaffId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.StaffId">Delete</a>
-                </td>
-            </tr>
-        }
+                        <a asp-action="Delete" asp-route-id="@item.StaffId">Delete</a>
+                    }
+               
+            </td>
+            
+        </tr>
+}
     </tbody>
 </table>

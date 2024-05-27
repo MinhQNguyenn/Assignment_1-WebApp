@@ -8,6 +8,7 @@
 
 <div>
     <h4>Staff</h4>
+   
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -37,11 +38,13 @@
         </dd>
     </dl>
 </div>
+
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.StaffId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
-
+    
 <script>
     function myFunction() {
         var x = document.getElementById("myInput");
@@ -49,5 +52,5 @@
             x.type = "text";
         } else {
             x.type = "password";
-        }
+    }
     }</script>
