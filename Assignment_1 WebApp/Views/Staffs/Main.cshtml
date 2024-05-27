@@ -14,18 +14,18 @@
 <h1>Hello @Model.Name</h1>
 @if (Model.Role == 1)
 {
-    <a asp-action="Product">Manage Product</a> <br />
-    <a asp-action="Index">Manage Staffs</a> <br />
-    <a asp-action="Details">Report</a>
+    <a asp-action="Index" asp-controller="Product">Manage Product</a> <br />
+    <a asp-action="Index" asp-controller="Staffs">Manage Staffs</a> <br />
+    <a asp-action="Index" asp-controller="Home">Report</a>
     <br />
-    <a asp-action="Edit" asp-route-id="@Model?.StaffId">Update Profile</a>
+    <a asp-action="Edit" asp-controller="Staffs" asp-route-id="@Model?.StaffId">Update Profile</a>
     <br />
 }
 else
 {
     <a asp-controller="Orders" asp-action="Index">Manage Order</a>
     <br />
-    <a asp-action="Details">Report</a>
+    <a asp-action="Index" asp-controller="Home">Report</a>
     <br />
     <a asp-action="Edit" asp-route-id="@Model?.StaffId">Update Profile</a>
     <br />

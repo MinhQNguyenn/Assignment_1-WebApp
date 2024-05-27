@@ -12,6 +12,14 @@ namespace Assignment_1_API.Models
             Orders = new HashSet<Order>();
         }
 
+        public Staff(int staffId, string name, string password, int role)
+        {
+            StaffId = staffId;
+            Name = name;
+            Password = password;
+            Role = role;
+        }
+
         public int StaffId { get; set; }
         [Display(Name = "Staff Name")]
         public string Name { get; set; } = null!;

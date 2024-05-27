@@ -1,0 +1,27 @@
+﻿@using Assignment_1_API.Models
+@model List<Order>
+@{
+    ViewData["Title"] = "Orders List";
+}
+
+<h2>Orders List</h2>
+
+<table class="table" border="1">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Staff ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.OrderId</td>
+                <td>@item.OrderDate.ToString("yyyy-MM-dd")</td> 
+                <td>@item.StaffId</td>
+            </tr>
+        }
+    </tbody>
+</table>

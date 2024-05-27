@@ -5,45 +5,44 @@ using Microsoft.AspNetCore.Mvc;
 using Assignment_1_API.Models;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text;
 
 namespace Assignment_1WebApp.Controllers
 {
     public class StaffsController : Controller
     {
         private readonly string _apiBaseUrl = "https://localhost:7271/api/Staffs"; // Base URL of your API
-
+        private readonly HttpClient client = null;
+        private string StaffApiUrl = "";
         public StaffsController()
         {
-
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            StaffApiUrl = "https://localhost:7271/api/Staffs";
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string pName = null)
         {
-            try
+            HttpResponseMessage response;
+            if (!string.IsNullOrEmpty(pName))
             {
-                var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync($"{_apiBaseUrl}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var staffList = JsonConvert.DeserializeObject<List<Staff>>(content); // Assuming Staff is your model class
-
-                    if (staffList == null || staffList.Count == 0)
-                    {
-                        return NotFound(); // No staff found
-                    }
-
-                    return View(staffList);
-                }
-                else
-                {
-                    return Problem($"Failed to retrieve staff details. Status code: {response.StatusCode}");
-                }
+                var query = $"?pName={pName}";
+                response = await client.GetAsync($"{StaffApiUrl}/search{query}");
             }
-            catch (Exception ex)
+            else
             {
-                return Problem($"An error occurred while fetching staff details: {ex.Message}");
+                response = await client.GetAsync(StaffApiUrl);
             }
+
+            string strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            List<Staff> listStaffs = System.Text.Json.JsonSerializer.Deserialize<List<Staff>>(strData, options);
+            return View(listStaffs);
 
         }
 
@@ -55,37 +54,17 @@ namespace Assignment_1WebApp.Controllers
         // GET: Staffs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            HttpResponseMessage response = await client.GetAsync(StaffApiUrl);
+            string strData = await response.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
             {
-                return NotFound();
-            }
+                PropertyNameCaseInsensitive = true,
+            };
+            List<Staff> listStaffs = System.Text.Json.JsonSerializer.Deserialize<List<Staff>>(strData, options);
+            var Staff = listStaffs.FirstOrDefault(p => p.StaffId == id);
 
-            try
-            {
-                var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync($"{_apiBaseUrl}/{id}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var staff = JsonConvert.DeserializeObject<Staff>(content); // Assuming Staff is your model class
-
-                    if (staff == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return View(staff);
-                }
-                else
-                {
-                    return Problem($"Failed to retrieve staff details. Status code: {response.StatusCode}");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Problem($"An error occurred while fetching staff details: {ex.Message}");
-            }
+            return View(Staff);
         }
 
         // GET: Staffs/Create
@@ -97,15 +76,14 @@ namespace Assignment_1WebApp.Controllers
         // POST: Staffs/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Password,Role")] Staff staff)
+        public async Task<IActionResult> Create([Bind("StaffId,Name, Password, Role")] Staff Staff)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var httpClient = new HttpClient();
-                var json = JsonConvert.SerializeObject(staff);
-                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                var json = System.Text.Json.JsonSerializer.Serialize(Staff);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PostAsync(_apiBaseUrl, content);
+                var response = await client.PostAsync(StaffApiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -113,13 +91,31 @@ namespace Assignment_1WebApp.Controllers
                 }
                 else
                 {
-                    return Problem($"Failed to create staff. Status code: {response.StatusCode}");
+                    // Handle error response
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
                 }
             }
-            catch (Exception ex)
+            return View(Staff);
+        }
+
+        public async Task<IActionResult> Search(string pName)
+        {
+            var query = $"?pName={pName}";
+            var response = await client.GetAsync($"{StaffApiUrl}/search{query}");
+
+            if (response.IsSuccessStatusCode)
             {
-                return Problem($"An error occurred while creating staff: {ex.Message}");
+                var json = await response.Content.ReadAsStringAsync();
+                var Staffs = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Staff>>(json);
+                ViewBag.SearchResults = Staffs;
             }
+            else
+            {
+                ViewBag.SearchResults = new List<Staff>();
+                ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+            }
+
+            return View("Index");
         }
 
         // GET: Staffs/Edit/5
