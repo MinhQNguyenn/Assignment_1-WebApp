@@ -15,8 +15,8 @@ namespace Assignment_1_API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            //var connectionString = builder.Configuration.GetConnectionString("MyStoreDB");
-            //builder.Services.AddDbContext<MyStoreContext>(options => { options.UseSqlServer(connectionString); });
+            var connectionString = builder.Configuration.GetConnectionString("MyStoreDB");
+            builder.Services.AddDbContext<MyStoreContext>(options => { options.UseSqlServer(connectionString); });
 
             var app = builder.Build();
 
