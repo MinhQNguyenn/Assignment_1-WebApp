@@ -36,7 +36,7 @@ namespace Assignment_1_WebApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Login}/{action=Login}/{id?}");
+                    pattern: "{controller=Login}/{action=Index}/{id?}");
             });
             app.UseAuthorization();
 
