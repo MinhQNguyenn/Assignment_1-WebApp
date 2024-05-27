@@ -1,0 +1,33 @@
+﻿@using Assignment_1_API.Models
+@model OrderDetail
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+<table class="table" border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <thead style="background-color: #f2f2f2;">
+        <tr>
+            <th>ID</th>
+            <th>Order ID</th>
+            <th>Product ID</th>
+            <th>Quantity</th>
+            <th>UnitPrice</th>
+            <!-- Add more detail columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+
+            <tr>
+                <td>@Model.OrderDetailId</td>
+                <td>@Model.OrderId</td>
+                <td>@Model.ProductId</td>
+                <td>@Model.Quantity</td>
+                <td>@Model.UnitPrice</td>
+                <!-- Populate additional detail columns as needed -->
+            </tr>
+
+    </tbody>
+</table>
