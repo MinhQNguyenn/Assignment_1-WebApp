@@ -24,21 +24,23 @@ namespace Assignment_1_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails()
         {
-          if (_context.OrderDetails == null)
-          {
-              return NotFound();
-          }
-            return await _context.OrderDetails.ToListAsync();
+            if (_context.OrderDetails == null)
+            {
+                return NotFound();
+            }
+            //return await _context.OrderDetails.ToListAsync();
+            return await _context.OrderDetails.Include(o => o.Product).Include(o => o.Order).ThenInclude(o => o.Staff).ToListAsync();
+
         }
 
         // GET: api/OrderDetails/5
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDetail>> GetOrderDetail(int id)
         {
-          if (_context.OrderDetails == null)
-          {
-              return NotFound();
-          }
+            if (_context.OrderDetails == null)
+            {
+                return NotFound();
+            }
             var orderDetail = await _context.OrderDetails.FindAsync(id);
 
             if (orderDetail == null)
@@ -85,10 +87,10 @@ namespace Assignment_1_API.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderDetail>> PostOrderDetail(OrderDetail orderDetail)
         {
-          if (_context.OrderDetails == null)
-          {
-              return Problem("Entity set 'MyStoreContext.OrderDetails'  is null.");
-          }
+            if (_context.OrderDetails == null)
+            {
+                return Problem("Entity set 'MyStore_G5Context.OrderDetails'  is null.");
+            }
             _context.OrderDetails.Add(orderDetail);
             await _context.SaveChangesAsync();
 
