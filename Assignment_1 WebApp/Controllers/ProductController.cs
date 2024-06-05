@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -17,15 +20,30 @@ namespace Assignment_1_WebApp.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ProductApiUrl = "https://localhost:7271/api/Products";
+            ProductApiUrl = "https://localhost:7271/odata/Products";
         }
         public async Task<IActionResult> Index(string? pName = null, int? unitPrice = null)
         {
             HttpResponseMessage response;
-            if (!string.IsNullOrEmpty(pName) || unitPrice != null || unitPrice.HasValue)
+            string odataQuery = "";
+
+            // Build OData query string
+            if (!string.IsNullOrEmpty(pName) && unitPrice.HasValue)
             {
-                var query = $"?pName={pName}&unitPrice={unitPrice}";
-                response = await client.GetAsync($"{ProductApiUrl}/search{query}");
+                odataQuery = $"?$filter=contains(ProductName,'{pName}') and UnitPrice eq {unitPrice.Value}";
+            }
+            else if (!string.IsNullOrEmpty(pName))
+            {
+                odataQuery = $"?$filter=contains(ProductName,'{pName}')";
+            }
+            else if (unitPrice.HasValue)
+            {
+                odataQuery = $"?$filter=UnitPrice eq {unitPrice.Value}";
+            }
+
+            if (!string.IsNullOrEmpty(odataQuery))
+            {
+                response = await client.GetAsync($"{ProductApiUrl}{odataQuery}");
                 ViewBag.name = pName;
                 ViewBag.unitPrice = unitPrice;
             }
@@ -35,23 +53,21 @@ namespace Assignment_1_WebApp.Controllers
             }
 
             string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<Product> listProducts = JsonSerializer.Deserialize<List<Product>>(strData, options);
+            var temp = JObject.Parse(strData);
+            dynamic list = temp["value"];
+            List<Product> listProducts = JsonConvert.DeserializeObject<List<Product>>(list.ToString());
             return View(listProducts);
         }
+
+
         public async Task<IActionResult> Details(int? id)
         {
             HttpResponseMessage response = await client.GetAsync(ProductApiUrl);
             string strData = await response.Content.ReadAsStringAsync();
+            var temp = JObject.Parse(strData);
+            dynamic list = temp["value"];
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<Product> listProducts = JsonSerializer.Deserialize<List<Product>>(strData, options);
+            List<Product> listProducts = JsonConvert.DeserializeObject<List<Product>>(list.ToString());
             var product = listProducts.FirstOrDefault(p => p.ProductId == id);
 
             return View(product);
@@ -104,12 +120,10 @@ namespace Assignment_1_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var json = JsonSerializer.Serialize(product);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var json = JsonConvert.SerializeObject(product);
+                HttpResponseMessage res = await client.PostAsJsonAsync(ProductApiUrl, product);
 
-                var response = await client.PostAsync(ProductApiUrl, content);
-
-                if (response.IsSuccessStatusCode)
+                if (res.IsSuccessStatusCode)
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -119,20 +133,27 @@ namespace Assignment_1_WebApp.Controllers
                     ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
                 }
             }
-
+            else
+            {
+                // Log the validation errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    // Log or display the error message
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
             ViewData["CategoryId"] = new SelectList(await GetCategories(), "CategoryId", "CategoryName", product.CategoryId);
             return View(product);
         }
         private async Task<IEnumerable<Category>> GetCategories()
         {
-            HttpResponseMessage response = await client.GetAsync("https://localhost:7271/api/Categories");
+            HttpResponseMessage response = await client.GetAsync("https://localhost:7271/odata/Categories");
             string strData = await response.Content.ReadAsStringAsync();
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<Category> listCategories = JsonSerializer.Deserialize<List<Category>>(strData, options);
+            var temp = JObject.Parse(strData);
+            dynamic list = temp["value"];
+            List<Category> listCategories = JsonConvert.DeserializeObject<List<Category>>(list.ToString());
 
             return listCategories;
         }
@@ -144,7 +165,9 @@ namespace Assignment_1_WebApp.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var products = JsonSerializer.Deserialize<IEnumerable<Product>>(json);
+                var temp = JObject.Parse(json);
+                dynamic list = temp["value"];
+                var products = JsonConvert.DeserializeObject<IEnumerable<Category>>(list.ToString());
                 ViewBag.SearchResults = products;
             }
             else
@@ -174,7 +197,7 @@ namespace Assignment_1_WebApp.Controllers
             {
                 PropertyNameCaseInsensitive = true,
             };
-            var product = JsonSerializer.Deserialize<Product>(strData, options);
+            var product = JsonConvert.DeserializeObject<Product>(strData);
 
             if (product == null)
             {
@@ -199,7 +222,7 @@ namespace Assignment_1_WebApp.Controllers
             {
                 try
                 {
-                    var jsonContent = new StringContent(JsonSerializer.Serialize(product), Encoding.UTF8, "application/json");
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
                     var response = await client.PutAsync($"{ProductApiUrl}/{id}", jsonContent);
 
                     if (!response.IsSuccessStatusCode)
