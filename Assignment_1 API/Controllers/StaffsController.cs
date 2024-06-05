@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment_1_API.Models;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class StaffsController : ControllerBase
+    //[Route("api/[controller]")]
+    //[ApiController]
+    public class StaffsController : ODataController
     {
         private readonly MyStoreContext _context;
 
@@ -22,6 +24,7 @@ namespace Assignment_1_API.Controllers
 
         // GET: api/Staffs
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
             if (_context.Staffs == null)
@@ -32,7 +35,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Staffs/5
-        [HttpGet("{id}")]
+        [HttpGet("odata/Staffs/{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
             if (_context.Staffs == null)
@@ -51,7 +54,7 @@ namespace Assignment_1_API.Controllers
 
         // PUT: api/Staffs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("odata/Staffs/{id}")]
         public async Task<IActionResult> PutStaff(int id, Staff staff)
         {
             if (id != staff.StaffId)
@@ -96,7 +99,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // DELETE: api/Staffs/5
-        [HttpDelete("{id}")]
+        [HttpDelete("odata/Staffs/{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
             if (_context.Staffs == null)
