@@ -223,7 +223,7 @@ namespace Assignment_1_WebApp.Controllers
                 try
                 {
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(product), Encoding.UTF8, "application/json");
-                    var response = await client.PutAsync($"{ProductApiUrl}/{id}", jsonContent);
+                    var response = await client.PutAsJsonAsync($"{ProductApiUrl}/{id}", product);
 
                     if (!response.IsSuccessStatusCode)
                     {

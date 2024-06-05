@@ -55,7 +55,7 @@ namespace Assignment_1_API.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("odata/Products/{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        public async Task<IActionResult> PutProduct(int id,[FromBody] Product product)
         {
             if (id != product.ProductId)
             {
