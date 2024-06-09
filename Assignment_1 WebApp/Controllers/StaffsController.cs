@@ -13,7 +13,7 @@ namespace Assignment_1WebApp.Controllers
 {
     public class StaffsController : Controller
     {
-        private readonly string _apiBaseUrl = "https://localhost:7271/api/Staffs"; // Base URL of your API
+        private readonly string _apiBaseUrl = "https://localhost:7271/odata/Staffs"; // Base URL of your API
         private readonly HttpClient client = null;
         private string StaffApiUrl = "";
         public StaffsController()
@@ -21,7 +21,7 @@ namespace Assignment_1WebApp.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            StaffApiUrl = "https://localhost:7271/api/Staffs";
+            StaffApiUrl = "https://localhost:7271/odata/Staffs";
         }
         public async Task<IActionResult> Index(string pName = null)
         {

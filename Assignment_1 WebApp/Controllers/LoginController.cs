@@ -18,7 +18,7 @@ namespace Assignment_1_WebApp.Controllers
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
       .Build();
                 var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync("https://localhost:7271/api/Staffs");
+                var response = await httpClient.GetAsync("https://localhost:7271/odata/Staffs");
                 string adminUsername = config["Account:Name"];
                 string adminPassword = config["Account:Password"];
 
