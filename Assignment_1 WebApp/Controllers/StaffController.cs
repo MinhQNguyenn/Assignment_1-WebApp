@@ -16,7 +16,7 @@ namespace Assignment_1_WebApp.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            StaffApiUrl = "https://localhost:7271/api/Staffs";
+            StaffApiUrl = "https://localhost:7271/odata/Staffs";
         }
         public async Task<IActionResult> Index(string pName = null)
         {
