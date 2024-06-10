@@ -1,6 +1,7 @@
 ﻿using Assignment_1_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Assignment_1_WebApp.Controllers
 {
@@ -30,8 +31,13 @@ namespace Assignment_1_WebApp.Controllers
                 }
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(content);
+                    
+                    string strData = await response.Content.ReadAsStringAsync();
+                    var temp = JObject.Parse(strData);
+                    dynamic list = temp["value"];
+
+                 
+                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
                     foreach (var item in staff)
                     {
                         if (username.Equals(item.Name) && password.Equals(item.Password))

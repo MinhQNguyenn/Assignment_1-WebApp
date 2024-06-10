@@ -169,13 +169,14 @@ namespace Assignment_1WebApp.Controllers
                 {
                     var httpClient = new HttpClient();
                     var json = JsonConvert.SerializeObject(staff);
-                    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                     var response = await httpClient.PutAsync($"{_apiBaseUrl}/{id}", content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Main");
+                        //return RedirectToAction(nameof(Index));
                     }
                     else
                     {

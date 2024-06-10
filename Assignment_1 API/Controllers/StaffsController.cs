@@ -55,7 +55,9 @@ namespace Assignment_1_API.Controllers
         // PUT: api/Staffs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("odata/Staffs/{id}")]
+
         public async Task<IActionResult> PutStaff(int id, [FromBody] Staff staff)
+
         {
             if (id != staff.StaffId)
             {
