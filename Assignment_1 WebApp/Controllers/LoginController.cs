@@ -1,6 +1,7 @@
 ﻿using Assignment_1_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Assignment_1_WebApp.Controllers
 {
@@ -18,7 +19,7 @@ namespace Assignment_1_WebApp.Controllers
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
       .Build();
                 var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync("https://localhost:7271/api/Staffs");
+                var response = await httpClient.GetAsync("https://localhost:7271/odata/Staffs");
                 string adminUsername = config["Account:Name"];
                 string adminPassword = config["Account:Password"];
 
@@ -30,8 +31,13 @@ namespace Assignment_1_WebApp.Controllers
                 }
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(content);
+                    
+                    string strData = await response.Content.ReadAsStringAsync();
+                    var temp = JObject.Parse(strData);
+                    dynamic list = temp["value"];
+
+                 
+                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
                     foreach (var item in staff)
                     {
                         if (username.Equals(item.Name) && password.Equals(item.Password))

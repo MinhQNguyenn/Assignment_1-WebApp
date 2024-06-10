@@ -1,6 +1,7 @@
 ﻿using Assignment_1_API.Models;
 using Assignment_1_WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -22,6 +23,7 @@ namespace Assignment_1_WebApp.Controllers
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
             //ViewData["startDate"] = startDate?.ToString("yyyy-MM-dd");

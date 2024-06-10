@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment_1_API.Models;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReportController : ControllerBase
+    public class ReportController : ODataController
     {
         private readonly MyStoreContext _context;
 
@@ -22,7 +24,8 @@ namespace Assignment_1_API.Controllers
 
         // GET: api/Report
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders([FromQuery] DateTime? StartDate, [FromQuery] DateTime? EndDate)
+        [EnableQuery]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersReport([FromQuery] DateTime? StartDate, [FromQuery] DateTime? EndDate)
         {
             if (_context.Orders == null)
             {
