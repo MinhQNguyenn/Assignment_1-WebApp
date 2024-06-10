@@ -13,8 +13,8 @@
     <a class="btn btn-success" asp-action="Create">Create New</a>
 </p>
 <p>
-    <form asp-action="Index" asp-controller="Staff">
-        Name: <input type="text" name="pName" />
+    <form asp-action="Index" asp-controller="Staffs">
+        Name: <input type="text" name="pName" value="@ViewBag.name" />
         <input type="submit" value="Search" />
     </form>
 </p>

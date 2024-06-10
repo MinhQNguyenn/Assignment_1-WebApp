@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Assignment_1WebApp.Controllers
 {
@@ -23,13 +25,19 @@ namespace Assignment_1WebApp.Controllers
             client.DefaultRequestHeaders.Accept.Add(contentType);
             StaffApiUrl = "https://localhost:7271/odata/Staffs";
         }
-        public async Task<IActionResult> Index(string pName = null)
+        public async Task<IActionResult> Index(string? pName = null)
         {
             HttpResponseMessage response;
+            string odataQuery = "";
             if (!string.IsNullOrEmpty(pName))
             {
-                var query = $"?pName={pName}";
-                response = await client.GetAsync($"{StaffApiUrl}/search{query}");
+                odataQuery = $"?$filter=contains(Name, '{pName}')";
+            }
+
+            if (!string.IsNullOrEmpty(odataQuery))
+            {
+                response = await client.GetAsync($"{StaffApiUrl}{odataQuery}");
+                ViewBag.name = pName;
             }
             else
             {
@@ -37,11 +45,14 @@ namespace Assignment_1WebApp.Controllers
             }
 
             string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            List<Staff> listStaffs = System.Text.Json.JsonSerializer.Deserialize<List<Staff>>(strData, options);
+            //var options = new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //};
+            var temp = JObject.Parse(strData);
+            dynamic list = temp["value"];
+
+            List<Staff> listStaffs = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
             return View(listStaffs);
 
         }
@@ -61,7 +72,10 @@ namespace Assignment_1WebApp.Controllers
             {
                 PropertyNameCaseInsensitive = true,
             };
-            List<Staff> listStaffs = System.Text.Json.JsonSerializer.Deserialize<List<Staff>>(strData, options);
+            var temp = JObject.Parse(strData);
+            dynamic list = temp["value"];
+
+            List<Staff> listStaffs = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
             var Staff = listStaffs.FirstOrDefault(p => p.StaffId == id);
 
             return View(Staff);
@@ -80,7 +94,7 @@ namespace Assignment_1WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var json = System.Text.Json.JsonSerializer.Serialize(Staff);
+                var json = JsonConvert.SerializeObject(Staff);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 var response = await client.PostAsync(StaffApiUrl, content);
@@ -106,7 +120,7 @@ namespace Assignment_1WebApp.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var Staffs = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Staff>>(json);
+                var Staffs = JsonConvert.DeserializeObject<IEnumerable<Staff>>(json);
                 ViewBag.SearchResults = Staffs;
             }
             else
