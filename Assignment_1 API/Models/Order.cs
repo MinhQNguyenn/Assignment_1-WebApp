@@ -17,6 +17,6 @@ namespace Assignment_1_API.Models
         //[JsonIgnore]
         public virtual Staff? Staff { get; set; } = null!;
         [JsonIgnore]
-        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

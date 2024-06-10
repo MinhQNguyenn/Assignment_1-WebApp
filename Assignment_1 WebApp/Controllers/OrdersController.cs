@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -9,7 +10,8 @@ using Assignment_1_API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
+using Newtonsoft.Json.Linq;
+using static System.Net.WebRequestMethods;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Assignment1_ClientWebApp.Controllers
@@ -25,41 +27,46 @@ namespace Assignment1_ClientWebApp.Controllers
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ApiUrl = "https://localhost:7271/api/";
+            //ApiUrl = "https://localhost:7271/api/";
+            ApiUrl = "https://localhost:7271/odata/";
         }
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
             string query = "Orders";
-            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}Orders");
+            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}Orders?$expand=Staff");
             string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var myStore_G5Context = JsonSerializer.Deserialize<List<Order>>(strData, options);
-            return View(myStore_G5Context);
+            //var options = new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //};
+            //var myStore_G5Context = JsonSerializer.Deserialize<List<Order>>(strData, options);
+            var tmp = JObject.Parse(strData);
+            var orderList = tmp["value"].ToObject<List<Order>>();
+            return View(orderList);
         }
         [HttpPost]
         public async Task<IActionResult> Index(DateTime startOrderDate, DateTime endOrderDate, string staffName)
         {
-            string query = "Orders";
+            string query = "Orders?$expand=Staff";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
             string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var myStore_G5Context = JsonSerializer.Deserialize<List<Order>>(strData, options);
+            //var options = new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //};
+            //var orderList = JsonSerializer.Deserialize<List<Order>>(strData, options);
+            
+            var orderList = JObject.Parse(strData)["value"].ToObject<List<Order>>();
 
             if (staffName == null)
                 staffName = string.Empty;
-            myStore_G5Context = myStore_G5Context.Where(i => startOrderDate.ToShortDateString().Trim().Equals(i.OrderDate.ToShortDateString().Trim()) && i.Staff.Name.ToLower().Trim().Contains(staffName.ToLower().Trim())).ToList();
+            orderList = orderList.Where(i => startOrderDate.ToShortDateString().Trim().Equals(i.OrderDate.ToShortDateString().Trim()) && i.Staff.Name.ToLower().Trim().Contains(staffName.ToLower().Trim())).ToList();
             ViewData["startOrderDate"] = startOrderDate;
             ViewData["endOrderDate"] = endOrderDate;
             ViewData["staffName"] = staffName;
-            return View(myStore_G5Context);
+            return View(orderList);
         }
 
         // GET: Orders/Details/5    
@@ -70,7 +77,8 @@ namespace Assignment1_ClientWebApp.Controllers
                 return NotFound();
             }
             string query = "OrderDetails";
-            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
+            //HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
+            HttpResponseMessage response = await client.GetAsync($"https://localhost:7271/api/{query}");
             string strData = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
             {
@@ -92,11 +100,8 @@ namespace Assignment1_ClientWebApp.Controllers
             string query = "Staffs";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
             string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var staffList = JsonSerializer.Deserialize<List<Staff>>(strData, options);
+
+            var staffList = JObject.Parse(strData)["value"].ToObject<List<Staff>>();
             ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name");
             return View();
         }
@@ -112,7 +117,7 @@ namespace Assignment1_ClientWebApp.Controllers
             if (ModelState.IsValid)
             {
                 string dataString = JsonSerializer.Serialize(order);
-                query = "Orders";
+                query = "Orderss";
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ApiUrl}{query}");
                 requestMessage.Content = new StringContent(dataString, Encoding.UTF8, "application/json");
                 HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
@@ -139,25 +144,34 @@ namespace Assignment1_ClientWebApp.Controllers
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Orders == null)
+            string query = "Orders";
+            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
+            string strData = await response.Content.ReadAsStringAsync();
+            var tmp = JObject.Parse(strData);
+            var orderList = tmp["value"].ToObject<List<Order>>();
+            if (id == null || orderList == null)
             {
                 return NotFound();
             }
-
-            var order = await _context.Orders.FindAsync(id);
+            response = await client.GetAsync($"{ApiUrl}{query}/{id}");
+            strData = await response.Content.ReadAsStringAsync();
+            var order = JsonSerializer.Deserialize<Order>(strData);
             if (order == null)
             {
                 return NotFound();
             }
 
-            string query = "Staffs";
-            HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
-            string strData = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-            var staffList = JsonSerializer.Deserialize<List<Staff>>(strData, options);
+
+            //var options = new JsonSerializerOptions
+            //{
+            //    PropertyNameCaseInsensitive = true,
+            //};
+            //var staffList = JsonSerializer.Deserialize<List<Staff>>(strData, options);
+            query = "Staffs";
+            response = await client.GetAsync($"{ApiUrl}{query}");
+            strData = await response.Content.ReadAsStringAsync();
+            tmp = JObject.Parse(strData);
+            var staffList = tmp["value"].ToObject<List<Staff>>();
             ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name", order.StaffId);
             return View(order);
         }
@@ -182,11 +196,13 @@ namespace Assignment1_ClientWebApp.Controllers
                     //string query = "Orders";
                     //HttpContent content = new StringContent(dataString, Encoding.UTF8, "application/json");
                     //HttpResponseMessage responseMessage = await client.PutAsync($"{ApiUrl}{query}", content);
-                    string dataString = JsonSerializer.Serialize(order);
-                    string query = "Orders";
-                    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{ApiUrl}{query}/{id}");
-                    requestMessage.Content = new StringContent(dataString, Encoding.UTF8, "application/json");
-                    HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+                    //string dataString = JsonSerializer.Serialize(order);
+                    string query = "Orderss";
+                    //HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Put, $"{ApiUrl}{query}/{id}");
+                    //requestMessage.Content = new StringContent(dataString, Encoding.UTF8, "application/json");
+                    //HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+                    HttpResponseMessage httpResponseMessage = await client.PutAsJsonAsync($"{ApiUrl}{query}/{id}", order);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

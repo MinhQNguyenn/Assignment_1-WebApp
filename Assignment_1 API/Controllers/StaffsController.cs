@@ -23,6 +23,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Staffs
+        // (duc) can chu y o day
         [HttpGet]
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
