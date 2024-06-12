@@ -51,7 +51,7 @@ namespace Assignment1_ClientWebApp.Controllers
         {
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", id);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
-            //ViewData["SelectedId"] = id;    
+            ViewData["SelectedId"] = id;
             return View();
         }
 
