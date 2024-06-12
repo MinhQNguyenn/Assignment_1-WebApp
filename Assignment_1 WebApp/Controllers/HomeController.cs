@@ -19,7 +19,7 @@ namespace Assignment_1_WebApp.Controllers
             this.client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ReportApiUrl = "https://localhost:7271/api/Report";
+            ReportApiUrl = "https://localhost:7271/odata/Report";
         }
 
         [HttpGet]

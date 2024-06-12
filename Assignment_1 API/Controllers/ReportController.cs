@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("odata/[controller]")]
     [ApiController]
     public class ReportController : ODataController
     {
