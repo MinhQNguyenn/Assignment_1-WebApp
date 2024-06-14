@@ -17,9 +17,11 @@ namespace Assignment_1_WebApp.Controllers
             {
                 IConfiguration config = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-      .Build();
+      .Build(); 
+                string odatafilter = $"?$filter=Name eq '{username}' and Password eq '{password}'";
                 var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync("https://localhost:7271/odata/Staffs");
+                var response = await httpClient.GetAsync("https://localhost:7271/odata/Staffs"+ odatafilter);
+                
                 string adminUsername = config["Account:Name"];
                 string adminPassword = config["Account:Password"];
 
