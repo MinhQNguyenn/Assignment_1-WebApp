@@ -23,7 +23,7 @@
 }
 else
 {
-    <a asp-controller="Orders" asp-action="Index">Manage Order</a>
+    <a asp-controller="Orders" asp-action="Index" asp-route-StaffId="@Model.StaffId">Manage Order</a>
     <br />
     <a asp-action="Index" asp-controller="Home">Report</a>
     <br />

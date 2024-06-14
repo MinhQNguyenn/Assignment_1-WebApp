@@ -18,6 +18,7 @@
                 <label asp-for="OrderId" class="control-label"></label>
                 <select asp-for="OrderId" class="form-control" asp-items="ViewBag.OrderId"></select>
                 <span asp-validation-for="OrderId" class="text-danger"></span>
+                <input type="hidden" name="StaffId" value="@ViewData["StaffId"]" />
             </div>
             <div class="form-group">
                 <label asp-for="Product.ProductName" class="control-label"></label>
@@ -42,7 +43,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Orders" asp-action="Index" asp-route-StaffId="@ViewData["StaffId"]">Back to List</a>
 </div>
 
 @section Scripts {

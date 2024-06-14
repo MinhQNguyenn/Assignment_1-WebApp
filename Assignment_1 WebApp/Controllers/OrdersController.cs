@@ -32,7 +32,7 @@ namespace Assignment1_ClientWebApp.Controllers
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int StaffId)
         {
             string query = "Orders";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}Orders?$expand=Staff");
@@ -44,10 +44,12 @@ namespace Assignment1_ClientWebApp.Controllers
             //var myStore_G5Context = JsonSerializer.Deserialize<List<Order>>(strData, options);
             var tmp = JObject.Parse(strData);
             var orderList = tmp["value"].ToObject<List<Order>>();
+            orderList = orderList.Where(o => o.StaffId == StaffId).ToList();
+            ViewData["StaffId"] = StaffId;
             return View(orderList);
         }
         [HttpPost]
-        public async Task<IActionResult> Index(DateTime startOrderDate, DateTime endOrderDate, string staffName)
+        public async Task<IActionResult> Index(DateTime startOrderDate, DateTime endOrderDate, string staffName, int? StaffId)
         {
             string query = "Orders?$expand=Staff";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
@@ -57,7 +59,7 @@ namespace Assignment1_ClientWebApp.Controllers
             //    PropertyNameCaseInsensitive = true,
             //};
             //var orderList = JsonSerializer.Deserialize<List<Order>>(strData, options);
-            
+
             var orderList = JObject.Parse(strData)["value"].ToObject<List<Order>>();
 
             if (staffName == null)
@@ -66,11 +68,12 @@ namespace Assignment1_ClientWebApp.Controllers
             ViewData["startOrderDate"] = startOrderDate;
             ViewData["endOrderDate"] = endOrderDate;
             ViewData["staffName"] = staffName;
+            ViewData["StaffId"] = StaffId;
             return View(orderList);
         }
 
         // GET: Orders/Details/5    
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? StaffId)
         {
             if (id == null || _context.Orders == null)
             {
@@ -91,18 +94,20 @@ namespace Assignment1_ClientWebApp.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["StaffId"] = StaffId;
             return View(orderDetailList);
         }
         // GET: Orders/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int StaffId)
         {
             string query = "Staffs";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
             string strData = await response.Content.ReadAsStringAsync();
 
             var staffList = JObject.Parse(strData)["value"].ToObject<List<Staff>>();
-            ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name");
+            //ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name");
+            ViewData["StaffId"] = StaffId;
+            ViewData["StaffName"] = _context.Staffs.Where(s => s.StaffId == StaffId).FirstOrDefault().Name;
             return View();
         }
 
@@ -121,13 +126,14 @@ namespace Assignment1_ClientWebApp.Controllers
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ApiUrl}{query}");
                 requestMessage.Content = new StringContent(dataString, Encoding.UTF8, "application/json");
                 HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+                ViewData["StaffId"] = order.StaffId;
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     // Xử lý response thành công
                     string responseData = await responseMessage.Content.ReadAsStringAsync();
                     Console.WriteLine(responseData);
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { StaffId = order.StaffId });
             }
             query = "Staffs";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
@@ -137,12 +143,14 @@ namespace Assignment1_ClientWebApp.Controllers
                 PropertyNameCaseInsensitive = true,
             };
             var staffList = JsonSerializer.Deserialize<List<Staff>>(strData, options);
-            ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name", order.StaffId);
+            //ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name", order.StaffId);
+
+            ViewData["StaffName"] = _context.Staffs.Where(s => s.StaffId == order.StaffId).FirstOrDefault().Name;
             return View(order);
         }
 
         // GET: Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? StaffId)
         {
             string query = "Orders";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}{query}");
@@ -172,7 +180,8 @@ namespace Assignment1_ClientWebApp.Controllers
             strData = await response.Content.ReadAsStringAsync();
             tmp = JObject.Parse(strData);
             var staffList = tmp["value"].ToObject<List<Staff>>();
-            ViewData["StaffId"] = new SelectList(staffList, "StaffId", "Name", order.StaffId);
+            ViewData["StaffId"] = StaffId;
+            ViewData["StaffName"] = _context.Staffs.Where(s => s.StaffId == order.StaffId).FirstOrDefault().Name;
             return View(order);
         }
 
@@ -215,14 +224,15 @@ namespace Assignment1_ClientWebApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { StaffId = order.StaffId });
             }
-            ViewData["StaffId"] = new SelectList(_context.Staffs, "StaffId", "Name", order.StaffId);
+            ViewData["StaffId"] = order.StaffId;
+
             return View(order);
         }
 
         // GET: Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int? StaffId)
         {
             if (id == null || _context.Orders == null)
             {
@@ -244,14 +254,14 @@ namespace Assignment1_ClientWebApp.Controllers
             {
                 return NotFound();
             }
-
+            ViewData["StaffId"] = StaffId;
             return View(order);
         }
 
         // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int? StaffId)
         {
 
             //    .FirstOrDefaultAsync(m => m.OrderId == id);
@@ -271,7 +281,7 @@ namespace Assignment1_ClientWebApp.Controllers
             {
                 response = await client.DeleteAsync($"{ApiUrl}Orders/{id}");
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { StaffId = StaffId});
         }
 
         private bool OrderExists(int id)

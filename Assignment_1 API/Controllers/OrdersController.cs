@@ -33,6 +33,16 @@ namespace Assignment_1_API.Controllers
             }
             return await _context.Orders.Include(o => o.Staff).ToListAsync();
         }
+        //[EnableQuery]
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByStaffId(int StaffId)
+        //{
+        //    if (_context.Orders == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return await _context.Orders.Include(o => o.Staff).Where(o=>o.StaffId==StaffId).ToListAsync();
+        //}
         // GET: api/Orders/5
         [HttpGet("/odata/Orders/{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)

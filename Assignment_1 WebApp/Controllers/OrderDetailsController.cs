@@ -47,11 +47,12 @@ namespace Assignment1_ClientWebApp.Controllers
         }
 
         // GET: OrderDetails/Create
-        public IActionResult Create(int id)
+        public IActionResult Create(int id, int? StaffId)
         {
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", id);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             ViewData["SelectedId"] = id;
+            ViewData["StaffId"] = StaffId;
             return View();
         }
 
@@ -60,21 +61,22 @@ namespace Assignment1_ClientWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderDetailId,OrderId,ProductId,Quantity,UnitPrice")] OrderDetail orderDetail)
+        public async Task<IActionResult> Create([Bind("OrderDetailId,OrderId,ProductId,Quantity,UnitPrice")] OrderDetail orderDetail, int? StaffId)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(orderDetail);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), "Orders", new { id = orderDetail.OrderId });
+                return RedirectToAction(nameof(Details), "Orders", new { id = orderDetail.OrderId, StaffId = StaffId });
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", orderDetail.OrderId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", orderDetail.ProductId);
+            ViewData["StaffId"] = StaffId;
             return View(orderDetail);
         }
 
         // GET: OrderDetails/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? StaffId)
         {
             if (id == null || _context.OrderDetails == null)
             {
@@ -88,6 +90,7 @@ namespace Assignment1_ClientWebApp.Controllers
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", orderDetail.OrderId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", orderDetail.ProductId);
+            ViewData["StaffId"] = StaffId;
             //return RedirectToAction($"Details/{id}", "Orders");
             return View(orderDetail);
         }
@@ -97,7 +100,7 @@ namespace Assignment1_ClientWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderDetailId,OrderId,ProductId,Quantity,UnitPrice")] OrderDetail orderDetail)
+        public async Task<IActionResult> Edit(int id, [Bind("OrderDetailId,OrderId,ProductId,Quantity,UnitPrice")] OrderDetail orderDetail, int? StaffId)
         {
             if (id != orderDetail.OrderDetailId)
             {
@@ -122,7 +125,7 @@ namespace Assignment1_ClientWebApp.Controllers
                     throw;
                 }
             }
-            return RedirectToAction($"Details", "Orders", new { id = orderDetail.OrderId });
+            return RedirectToAction($"Details", "Orders", new { id = orderDetail.OrderId,StaffId=StaffId });
             //}
             //ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", orderDetail.OrderId);
             //ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", orderDetail.ProductId);
@@ -130,7 +133,7 @@ namespace Assignment1_ClientWebApp.Controllers
         }
 
         // GET: OrderDetails/Delete/5
-        public async Task<IActionResult> Delete(int? id, int orderId)
+        public async Task<IActionResult> Delete(int? id, int orderId, int? StaffId)
         {
             if (id == null || _context.OrderDetails == null)
             {
@@ -145,6 +148,7 @@ namespace Assignment1_ClientWebApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["StaffId"] = StaffId;
             ViewData["OrderId"] = orderId;
             return View(orderDetail);
         }
@@ -152,7 +156,7 @@ namespace Assignment1_ClientWebApp.Controllers
         // POST: OrderDetails/Delete/5 **********
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int orderId)
+        public async Task<IActionResult> DeleteConfirmed(int id, int orderId, int? StaffId)
         {
             if (_context.OrderDetails == null)
             {
@@ -165,7 +169,7 @@ namespace Assignment1_ClientWebApp.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Orders", new { id = orderId });
+            return RedirectToAction("Details", "Orders", new { id = orderId,StaffId =StaffId });
         }
 
         private bool OrderDetailExists(int id)

@@ -42,6 +42,7 @@
         <input type="hidden" asp-for="OrderDetailId" />
         <input type="hidden" name="orderId" value="@ViewData["OrderId"]" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" asp-controller="Orders">Back to Order List</a>
+        <input type="hidden" name="StaffId" value="@ViewData["StaffId"]" />
+        <a asp-controller="Orders" asp-action="Index" asp-route-StaffId="@ViewData["StaffId"]">Back to List</a>
     </form>
 </div>

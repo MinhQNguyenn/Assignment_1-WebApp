@@ -4,8 +4,8 @@
     ViewData["Title"] = "Order List";
 
     string staffname = ViewData["staffName"] as string;
-    DateTime startOrderDate =DateTime.Now;
-    if (ViewBag.startOrderDate!=null)
+    DateTime startOrderDate = DateTime.Now;
+    if (ViewBag.startOrderDate != null)
     {
         startOrderDate = ViewBag.startOrderDate;
     }
@@ -14,24 +14,25 @@
     {
         endOrderDate = ViewBag.endOrderDate;
     }
-    
-    
+
+
     // string endOrderDate = ViewData["endOrderDate"] as DateTime as DateTime;
 }
 
 <h1>Order List</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route-StaffId="@ViewData["StaffId"]">Create New</a>
 </p>
 <form method="post" asp-action="Index">
+    <input type="hidden" name="StaffId" value="@ViewData["StaffId"]" />
     <table>
         <tr>
-           @*  <input asp-for="OrderDate" type="datetime-local" name="OrderDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" /> *@
+            @*  <input asp-for="OrderDate" type="datetime-local" name="OrderDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" /> *@
             <td>Order Date</td>
-            <td><input type="datetime-local" name="startOrderDate" value="@startOrderDate.ToString("yyyy-MM-ddTHH:mm:ss")" /></td>
+            <td><input type="date" name="startOrderDate" value="@startOrderDate.ToString("yyyy-MM-dd")" /></td>
         </tr>
-        
+
         <tr>
             <td>Staff Name</td>
             <td><input type="text" name="staffName" value="@ViewData["staffName"]" /></td>
@@ -55,20 +56,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Staff.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Staff.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+@* @Html.DisplayFor(modelItem => item.OrderDate) *@
+
+@* @item.OrderDate.ToShortDateString() *@
