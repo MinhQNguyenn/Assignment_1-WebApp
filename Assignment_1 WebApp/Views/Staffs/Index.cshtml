@@ -51,7 +51,13 @@
                 @Html.DisplayFor(modelItem => item.Password)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Role)
+                    @if (item.Role==1)
+                    {
+                        <p>Admin</p>
+                    }
+                    else {
+                        <p>Employees</p>
+                    }
             </td>
             <td>
                     <a asp-action="Edit" asp-route-id="@item.StaffId">Edit</a> |
