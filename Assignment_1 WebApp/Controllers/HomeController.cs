@@ -24,8 +24,8 @@ namespace Assignment_1_WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            //ViewData["startDate"] = startDate?.ToString("yyyy-MM-dd");
-            //ViewData["endDate"] = endDate?.ToString("yyyy-MM-dd");
+            ViewData["startDate"] = startDate?.ToString("yyyy-MM-dd");
+            ViewData["endDate"] = endDate?.ToString("yyyy-MM-dd");
 
             if (startDate == null)
             {

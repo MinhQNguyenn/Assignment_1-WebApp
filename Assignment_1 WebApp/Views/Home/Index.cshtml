@@ -29,7 +29,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @* @foreach (var item in Model)
         {
             <tr style="border: 1px solid #ddd;">
                 <td style="padding: 10px; border: 1px solid #ddd;">@item.OrderId</td>
@@ -39,8 +39,47 @@
                     <a asp-action="ReportDetail" asp-controller="Home" asp-route-orderId="@item.OrderId">Detail</a>
                 </td>
             </tr>
-        }
+        } *@
     </tbody>
 </table>
+
+
+
+<script>
+    ShowOrders();
+
+    function ShowOrders() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        let url = 'https://localhost:7271/api/Report';
+
+        if (startDate || endDate) {
+            url += `?StartDate=${startDate}&EndDate=${endDate}`;
+        }
+
+        let tbody = document.querySelector("tbody");
+        tbody.innerHTML = "";
+        fetch(url)
+            .then(res => res.json())
+            .then(data => data.forEach(item => {
+                let orderDate = new Date(item.orderDate);
+                let formattedDate = orderDate.toISOString().split('T')[0];
+
+                console.log(item)
+                let html = `<tr>
+                        <td>${item.orderId}</td>
+                        <td>${formattedDate}</td>
+                        <td>${item.staffId}</td>
+                            <td><a href="/Home/ReportDetail?orderId=${item.orderId}">Detail</a></td>
+                    </tr>`
+                tbody.innerHTML += html;
+            }))
+            .catch(error => {
+                alert('Error fetching data: ' + error.message);
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+</script>
 
 

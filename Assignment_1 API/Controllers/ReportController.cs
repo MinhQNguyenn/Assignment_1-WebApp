@@ -42,6 +42,7 @@ namespace Assignment_1_API.Controllers
             }
             if (EndDate != null)
             {
+                EndDate = EndDate.Value.Date.AddDays(1).AddTicks(-1);
                 orders = orders.Where(item => item.OrderDate <= EndDate);
             }
 

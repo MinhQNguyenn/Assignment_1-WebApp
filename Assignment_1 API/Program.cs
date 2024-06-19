@@ -19,6 +19,8 @@ namespace Assignment_1_API
             builder.Services.AddDbContext<MyStoreContext>(options => { options.UseSqlServer(connectionString); });
 
             var app = builder.Build();
+            app.UseCors(option => option.AllowAnyHeader().
+                AllowAnyMethod().AllowAnyOrigin());
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
