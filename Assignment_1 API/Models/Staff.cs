@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Assignment_1_API.Models
 {
@@ -14,7 +15,7 @@ namespace Assignment_1_API.Models
         public string Name { get; set; } = null!;
         public string Password { get; set; } = null!;
         public int Role { get; set; }
-
-        public virtual ICollection<Order> Orders { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Order>? Orders { get; set; }
     }
 }

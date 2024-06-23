@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Assignment_1_API.Models
 {
@@ -14,7 +15,8 @@ namespace Assignment_1_API.Models
         public DateTime OrderDate { get; set; }
         public int StaffId { get; set; }
 
-        public virtual Staff Staff { get; set; } = null!;
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual Staff? Staff { get; set; } = null!;
+        [JsonIgnore]
+        public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
     }
 }
