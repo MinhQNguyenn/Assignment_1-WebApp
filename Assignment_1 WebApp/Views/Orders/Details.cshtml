@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Assignment_1_API.Models.OrderDetail>
+
+@{
+    ViewData["Title"] = "Order Details";
+    string StaffName = null;
+    if (Model.ToList().Count > 0)
+        StaffName = Model.ToList()[0].Order.Staff.Name;
+}
+
+<h1>Order Details</h1>
+<p>
+    <a asp-controller="OrderDetails" asp-action="Create" asp-route-id="@ViewData["OrderId"]">Create New OrderDetail</a>
+</p>
+
+
+@Html.DisplayNameFor(model => model.Order.Staff.Name): @StaffName
+<table class="table">
+    <thead>
+        <tr>
+            @*   <th>
+            @Html.DisplayNameFor(model => model.Order.Staff.Name)
+            </th> *@
+            <th>
+                @Html.DisplayNameFor(model => model.Product.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*  <td>
+            @Html.DisplayFor(modelItem => item.Order.Staff.Name)
+            </td> *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-controller="OrderDetails" asp-route-id="@item.OrderDetailId">Edit</a> |
+                    <a asp-action="Delete" asp-controller="OrderDetails" asp-route-id="@item.OrderDetailId" asp-route-orderId="@ViewData["OrderId"]">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="index">Back To Order List!</a>
+@* <div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OrderDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OrderDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Staff)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Staff.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+ *@
+
