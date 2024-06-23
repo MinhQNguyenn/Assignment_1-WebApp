@@ -61,12 +61,22 @@ namespace Assignment1_ClientWebApp.Controllers
             //var orderList = JsonSerializer.Deserialize<List<Order>>(strData, options);
 
             var orderList = JObject.Parse(strData)["value"].ToObject<List<Order>>();
-
+            bool checkNullStaffName = false;
             if (staffName == null)
-                staffName = string.Empty;
+            {
+                checkNullStaffName = true;
+                //staffName = string.Empty;
+                staffName = _context.Staffs.Where(s => s.StaffId == StaffId).FirstOrDefault().Name;
+
+            }
+           
             orderList = orderList.Where(i => startOrderDate.ToShortDateString().Trim().Equals(i.OrderDate.ToShortDateString().Trim()) && i.Staff.Name.ToLower().Trim().Contains(staffName.ToLower().Trim())).ToList();
             ViewData["startOrderDate"] = startOrderDate;
             ViewData["endOrderDate"] = endOrderDate;
+            if (checkNullStaffName)
+            {
+                staffName = string.Empty;
+            }
             ViewData["staffName"] = staffName;
             ViewData["StaffId"] = StaffId;
             return View(orderList);
