@@ -24,22 +24,23 @@ namespace Assignment_1_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
-            return await _context.Orders.ToListAsync();
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            return await _context.Orders.Include(o => o.Staff).ToListAsync();
         }
-
         // GET: api/Orders/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
-          if (_context.Orders == null)
-          {
-              return NotFound();
-          }
-            var order = await _context.Orders.FindAsync(id);
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            var order = await _context.Orders
+                   .Include(o => o.Staff)
+                   .FirstOrDefaultAsync(m => m.OrderId == id);
 
             if (order == null)
             {
@@ -85,10 +86,10 @@ namespace Assignment_1_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
-          if (_context.Orders == null)
-          {
-              return Problem("Entity set 'MyStoreContext.Orders'  is null.");
-          }
+            if (_context.Orders == null)
+            {
+                return Problem("Entity set 'MyStore_G5Context.Orders'  is null.");
+            }
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
