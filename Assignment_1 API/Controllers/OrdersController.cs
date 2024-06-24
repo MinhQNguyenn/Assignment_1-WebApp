@@ -30,6 +30,19 @@ namespace Assignment_1_API.Controllers
             }
             return await _context.Orders.Include(o => o.Staff).ToListAsync();
         }
+        [HttpGet("/api/OrdersBySearch")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersBySearch([FromQuery] DateTime orderDate, [FromQuery] int staffId)
+        {
+            await Console.Out.WriteLineAsync("orderDate: "+ orderDate);
+            if (_context.Orders == null)
+            {
+                return NotFound();
+            }
+            // nếu k đổi sang tolist thì lỗi
+          var  orderList =  _context.Orders.Include(o=>o.Staff).ToList().Where(i => orderDate.ToShortDateString().Equals(i.OrderDate.ToShortDateString())&&i.StaffId==staffId);
+            //return await _context.Orders.Include(o => o.Staff).ToListAsync();
+            return orderList.ToList();
+        }
         // GET: api/Orders/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
@@ -53,7 +66,7 @@ namespace Assignment_1_API.Controllers
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutOrder(int id,[FromBody] Order order)
         {
             if (id != order.OrderId)
             {

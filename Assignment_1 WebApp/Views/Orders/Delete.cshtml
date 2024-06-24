@@ -25,9 +25,26 @@
         </dd>
     </dl>
 
-    <form asp-action="Delete">
+    @* <form asp-action="Delete"> *@
         <input type="hidden" asp-for="OrderId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <input type="submit" value="Delete" class="btn btn-danger" onclick="DeleteOrder()" /> |
+        @* <input type="hidden" name="StaffId" value="@ViewData["StaffId"]" /> *@
+        <a asp-action="Index" >Back to List</a>
+    @* </form> *@
 </div>
+
+<script>
+    function DeleteOrder() {
+        let orderId = document.getElementById("OrderId").value;
+        fetch(`https://localhost:7271/api/Orders/${orderId}`,
+            {
+                method: "delete",
+                headers: {
+                    "content-type": "application/json"
+                },
+                // body: JSON.stringify(obj)
+            })
+            .then(res => location.href = "/Orders")
+            .catch(err => alert(err));
+    }
+</script>

@@ -1,10 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@model IEnumerable<Assignment_1_API.Models.Order>
-
+﻿@model IEnumerable<Assignment_1_API.Models.Order>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContext;
 @{
     ViewData["Title"] = "Order List";
 
@@ -19,34 +14,36 @@
     {
         endOrderDate = ViewBag.endOrderDate;
     }
+    var StaffId = HttpContext.HttpContext.Session.GetInt32("UserId");
 
 
-    // string endOrderDate = ViewData["endOrderDate"] as DateTime as DateTime;
 }
 
 <h1>Order List</h1>
 
 <p>
+    @* <a asp-action="Create" asp-route-StaffId="@ViewData["StaffId"]">Create New</a> *@
     <a asp-action="Create">Create New</a>
 </p>
-<form method="post" asp-action="Index">
-    <table>
-        <tr>
-            @*  <input asp-for="OrderDate" type="datetime-local" name="OrderDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" /> *@
-            <td>Order Date</td>
-            <td><input type="datetime-local" name="startOrderDate" value="@startOrderDate.ToString("yyyy-MM-ddTHH:mm:ss")" /></td>
-        </tr>
+@* <form method="post" asp-action="Index"> *@
+<input type="hidden" name="StaffId" value="@StaffId" id="StaffId" />
+<table>
+    <tr>
+        @*  <input asp-for="OrderDate" type="datetime-local" name="OrderDate" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")" /> *@
+        <td>Order Date</td>
+        <td><input type="date" name="startOrderDate" id="startOrderDate" value="@startOrderDate.ToString("yyyy-MM-dd")" /></td>
+    </tr>
 
-        <tr>
-            <td>Staff Name</td>
-            <td><input type="text" name="staffName" value="@ViewData["staffName"]" /></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="submit" name="search" value="Search" /></td>
-        </tr>
-    </table>
-</form>
+    <tr>
+        <td>Staff Name: </td>
+        <td><span id="staffName">@ViewData["staffName"]</span></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input type="submit" name="search" value="Search" onclick="SearchOrders()" /></td>
+    </tr>
+</table>
+@* </form> *@
 <table class="table">
     <thead>
         <tr>
@@ -59,22 +56,80 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <tbody id="tbodyID">
+          @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Staff.Name)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
-                </td>
-            </tr>
+        <tr>
+        <td>
+        @Html.DisplayFor(modelItem => item.OrderDate)
+        </td>
+        <td>
+        @Html.DisplayFor(modelItem => item.Staff.Name)
+        </td>
+        <td>
+        <a asp-action="Edit" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Edit</a> |
+        <a asp-action="Details" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Details</a> |
+        <a asp-action="Delete" asp-route-id="@item.OrderId" asp-route-StaffId="@ViewData["StaffId"]">Delete</a>
+        </td>
+        </tr>
         }
     </tbody>
 </table>
+@* @Html.DisplayFor(modelItem => item.OrderDate) *@
+
+@* @item.OrderDate.ToShortDateString() *@
+<script>
+    // ShowList();
+    //tạm thời không dùng hàm này
+    function ShowList() {
+        // let tbody = document.querySelector("tbody");
+        let tbody = document.getElementById("tbodyID");
+        let html = '';
+        fetch("https://localhost:7271/api/Orders")
+            .then(res => res.json())
+            .then(data => data.forEach(item => {
+                // console.log(item)
+                const subDate = item.orderDate.substring(0, 10);
+                // let formattedDate = new Date(item.orderDate).toISOString().split('T')[0];
+                html += `<tr>
+                                             <td>${subDate}</td>
+                                    <td>${item.staff.name}</td>
+                                <td>
+                                            <a href='/Orders/Edit?id=${item.orderId}'>Edit</a>
+                                                <a href='/Orders/Details?id=${item.orderId}'>Edit</a>
+                                            <a href='/Orders/Delete?id=${item.orderId}'>Delete</a>
+                                </td>
+                            </tr>`
+                tbody.innerHTML = html;
+            }))
+            .catch(err => alert(err));
+    }
+
+    function SearchOrders() {
+        // let tbody = document.querySelector("tbody");
+        const orderDate = document.getElementById('startOrderDate').value;
+        const StaffIdd = document.getElementById('StaffId').value;
+        console.log(StaffIdd);
+        let tbody = document.getElementById("tbodyID");
+        tbody.innerHTML = '';
+        let html = '';
+        fetch(`https://localhost:7271/api/OrdersBySearch?orderDate=${orderDate}&staffId=${StaffIdd}`)
+            .then(res => res.json())
+            .then(data => data.forEach(item => {
+                // console.log(item);
+                const subDate = item.orderDate.substring(0, 10);
+                // let formattedDate = new Date(item.orderDate).toISOString().split('T')[0];
+                html += `<tr>
+                                                <td>${subDate}</td>
+                                        <td>${item.staff.name}</td>
+                                    <td>
+                                                <a href='/Orders/Edit?id=${item.orderId}'>Edit</a>
+                                                        <a href='/Orders/Details?id=${item.orderId}'>Details</a>
+                                                <a href='/Orders/Delete?id=${item.orderId}'>Delete</a>
+                                    </td>
+                                </tr>`
+                tbody.innerHTML = html;
+            }))
+            .catch(err => alert(err));
+    }
+</script>
