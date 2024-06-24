@@ -64,7 +64,10 @@
             .then(res => res.json())
             .then(data => data.forEach(item => {
                 let orderDate = new Date(item.orderDate);
-                let formattedDate = orderDate.toISOString().split('T')[0];
+                let year = orderDate.getFullYear();
+                let month = String(orderDate.getMonth() + 1).padStart(2, '0');
+                let day = String(orderDate.getDate()).padStart(2, '0');
+                let formattedDate = `${year}-${month}-${day}`;
 
                 console.log(item)
                 let html = `<tr>
