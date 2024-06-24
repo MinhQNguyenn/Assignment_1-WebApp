@@ -1,3 +1,6 @@
+using Assignment_1_API.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Assignment_1_WebApp
 {
     public class Program
@@ -5,11 +8,21 @@ namespace Assignment_1_WebApp
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Services.AddDbContext<MyStoreContext>();
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = "MyApp.Session"; // Set a custom cookie name
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the session timeout
+            });
             var app = builder.Build();
+
+
+
+
+            app.UseSession();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -23,12 +36,14 @@ namespace Assignment_1_WebApp
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Orders}/{action=Index}/{id?}");
+            });
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

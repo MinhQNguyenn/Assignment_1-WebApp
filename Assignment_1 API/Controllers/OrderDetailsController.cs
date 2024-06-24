@@ -28,7 +28,7 @@ namespace Assignment_1_API.Controllers
           {
               return NotFound();
           }
-            return await _context.OrderDetails.ToListAsync();
+            return await _context.OrderDetails.Include(o => o.Product).Include(o => o.Order).ThenInclude(o => o.Staff).ToListAsync();
         }
 
         // GET: api/OrderDetails/5
