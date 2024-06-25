@@ -1,4 +1,4 @@
-﻿@model Assignment_1_API.Models.Product
+﻿@model int?
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,23 +10,23 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form id="editForm" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" name="ProductId" />
             <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
+                ProductName
+                <input id="ProductName" class="form-control" />
+                
             </div>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                CategoryId
+                <select id="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                
             </div>
             <div class="form-group">
-                <label asp-for="UnitPrice" class="control-label"></label>
-                <input asp-for="UnitPrice" class="form-control" />
-                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+               UnitPrice
+                <input id="UnitPrice" class="form-control" />
+                
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -40,7 +40,93 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let productId = @Model; // Get the integer id from the model
+            
+            // Fetch product details based on productId
+            fetchProduct();
+
+            // Fetch categories and populate select list
+            fetchCategories();
+
+            // Submit form handler
+            document.getElementById("editForm").addEventListener("submit", function (event) {
+                event.preventDefault();
+                saveProduct();
+            });
+
+            // Function to fetch categories and populate select list
+            function fetchCategories() {
+                fetch("https://localhost:7271/odata/Categories", {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const categorySelect = document.getElementById("CategoryId");
+                        const categories = data.value;
+
+                        // Populate the select element with categories
+                        categories.forEach(category => {
+                            const option = document.createElement("option");
+                            option.value = category.CategoryId;
+                            option.textContent = category.CategoryName;
+                            categorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching categories:", error);
+                        alert("Error fetching categories. Please try again later.");
+                    });
+            }
+
+            // Function to fetch product details
+            function fetchProduct() {
+                fetch(`https://localhost:7271/odata/Products/${productId}`) // Adjust URL as per your backend routing
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(product => {
+                        // Populate form fields with current product data
+                        document.getElementById("ProductName").value = product.ProductName;
+                        document.getElementById("UnitPrice").value = product.UnitPrice;
+                        // Optionally update CategoryId select box if needed
+                        document.getElementById("CategoryId").value = product.CategoryId;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching product details:", error);
+                        alert("Failed to fetch product details. Please check console for details.");
+                    });
+            }
+
+            function saveProduct() {
+                
+                let obj = {
+                    productId: productId,
+                    ProductName: document.getElementById("ProductName").value,
+                    CategoryId: document.getElementById("CategoryId").value,
+                    UnitPrice: document.getElementById("UnitPrice").value
+                }
+
+                fetch(`https://localhost:7271/odata/Products/${productId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "content-type": "application/json"
+                        },
+                        body: JSON.stringify(obj)
+                    })
+                    .then(res => location.href = "/Product")
+                    .catch(err => alert(err));
+            }
+        });
+    </script>
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

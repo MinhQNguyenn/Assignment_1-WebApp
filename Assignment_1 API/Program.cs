@@ -25,7 +25,7 @@ namespace Assignment_1_API
             //    .AddJsonFile("appsettings.json")
             //    .Build();
             // Add services to the container.
-
+            builder.Services.AddCors();
             //ODataConventionModelBuilder modelBuilder = new ODataConventionModelBuilder();
             //modelBuilder.EntitySet<Category>("Categories");
             //modelBuilder.EntitySet<Product>("Products");
@@ -36,14 +36,17 @@ namespace Assignment_1_API
             //confige Odata
             builder.Services.AddControllers().AddOData(options => options.Select().Filter().Count().OrderBy().Expand().SetMaxTop(100).AddRouteComponents("odata", GetEdmModel()));
 
+            
 
             //builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddDbContext<MyStoreContext>();// (opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("MyStore")));
-            var app = builder.Build();
 
+            var app = builder.Build();
+            app.UseCors(option => option.AllowAnyHeader().
+                AllowAnyMethod().AllowAnyOrigin());
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

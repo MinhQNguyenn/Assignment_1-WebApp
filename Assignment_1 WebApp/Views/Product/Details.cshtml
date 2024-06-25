@@ -1,4 +1,4 @@
-﻿@model Assignment_1_API.Models.Product
+﻿@model int?
 
 @{
     ViewData["Title"] = "Details";
@@ -11,26 +11,57 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductName)
+            Product Name
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ProductName)
+        <dd class="col-sm-10" id="productName">
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UnitPrice)
+            Unit Price
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UnitPrice)
+        <dd class="col-sm-10" id="unitPrice">
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Category.CategoryName)
-        </dd>
+        
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
+    <a id="editLink">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const productId = @Model;
+
+            if (!productId) {
+                alert("Product ID is missing");
+                return;
+            }
+
+            fetch(`https://localhost:7271/odata/Products/${productId}`, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("productName").textContent = data.ProductName;
+                    document.getElementById("unitPrice").textContent = data.UnitPrice;
+                    
+
+                    document.getElementById("editLink").href = `/Products/Edit?id=${data.ProductId}`;
+                })
+                .catch(error => {
+                    console.error("Error fetching product details:", error);
+                    alert("Error fetching product details. Please check console for more information.");
+                });
+
+        });
+    </script>
+}

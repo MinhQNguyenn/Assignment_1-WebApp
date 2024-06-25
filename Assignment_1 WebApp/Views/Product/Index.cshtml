@@ -1,6 +1,4 @@
-﻿@model IEnumerable<Assignment_1_API.Models.Product>
-
-@{
+﻿@{
     ViewData["Title"] = "Index";
 }
 
@@ -10,53 +8,94 @@
     <a class="btn btn-success" asp-action="Create">Create New</a>
 </p>
 <p>
-    <form asp-action="Index" asp-controller="Product">
-        Name: <input type="text" name="pName" value="@ViewBag.name" />
-        UnitPrice: <input type="number" name="unitPrice" value="@ViewBag.unitPrice" />
+    <form id="searchForm">
+        Name: <input type="text" id="pName" name="pName" />
+        UnitPrice: <input type="number" id="unitPrice" name="unitPrice" />
         <input type="submit" value="Search" />
     </form>
 </p>
 <p>
-    Number of products found: @Model.Count()
+    Number of products found: <span id="productCount"></span>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnitPrice)
-            </th>
-
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Unit Price</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UnitPrice)
-                </td>
-
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId" onclick="confirmDelete(event)">Delete</a>
-                </td>
-            </tr>
-        }
+    <tbody >
     </tbody>
 </table>
-<script type="text/javascript">
-    function confirmDelete(event) {
-        event.preventDefault();
-        if (confirm("Are you sure you want to delete this product?")) {
-            window.location.href = event.currentTarget.href;
+
+<script >
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchForm = document.getElementById("searchForm");
+
+        searchForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const pName = document.getElementById("pName").value;
+            const unitPrice = document.getElementById("unitPrice").value;
+            ShowProducts(pName, unitPrice);
+        });
+
+        // Initial load without filters
+        ShowProducts();
+    });
+
+    async function ShowProducts(pName = '', unitPrice = '') {
+        let tbody = document.querySelector("tbody");
+        tbody.innerHTML = "";
+
+        // Build the query string for OData
+        let query = '';
+        if (pName) {
+            query += `$filter=contains(ProductName,'${pName}')`;
+        }
+        if (unitPrice) {
+            query += (query ? ' and ' : '$filter=') + `UnitPrice eq ${unitPrice}`;
+        }
+
+        const apiUrl = `https://localhost:7271/odata/Products${query ? '?' + query : ''}`;
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const products = data.value;
+
+                if (Array.isArray(products)) {
+                    products.forEach(item => {
+                        let html = `<tr>
+                                        <td>${item.ProductName}</td>
+                                        <td>${item.UnitPrice}</td>
+                                        <td>
+                                            <a href='/Product/Details?id=${item.ProductId}'>Details</a>
+                                            <a href='/Product/Edit?id=${item.ProductId}'>Edit</a>
+                                            <a href='/Product/Delete?id=${item.ProductId}'>Delete</a>
+                                        </td>
+                                    </tr>`;
+                        tbody.innerHTML += html;
+                    });
+
+                    document.getElementById("productCount").textContent = products.length;
+                } else {
+                    console.error('Unexpected data format', data);
+                    alert('Unexpected data format received from the server.');
+                }
+            } else {
+                console.error('Failed to load products');
+                alert('Failed to load products');
+            }
+        } catch (err) {
+            console.error('Fetch error', err);
+            alert('Error fetching data from the server.');
         }
     }
 </script>
