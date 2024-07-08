@@ -58,7 +58,7 @@
             query += (query ? ' and ' : '$filter=') + `UnitPrice eq ${unitPrice}`;
         }
 
-        const apiUrl = `https://localhost:7271/odata/Products${query ? '?' + query : ''}`;
+        const apiUrl = `https://localhost:7271/api/Products${query ? '?' + query : ''}`;
         try {
             const response = await fetch(apiUrl, {
                 headers: {
@@ -67,10 +67,13 @@
             });
 
             if (response.ok) {
-                const data = await response.json();
-                const products = data.value;
+                const products = await response.json();
+                ////const products = data.value;
+                console.log(products);
+                console.log(data);
 
                 if (Array.isArray(products)) {
+                    console.log("12");
                     products.forEach(item => {
                         let html = `<tr>
                                         <td>${item.ProductName}</td>

@@ -52,7 +52,7 @@
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
 
-        let url = 'https://localhost:7271/api/Report';
+        let url = 'https://localhost:7271/odata/Report';
 
         if (startDate || endDate) {
             url += `?StartDate=${startDate}&EndDate=${endDate}`;

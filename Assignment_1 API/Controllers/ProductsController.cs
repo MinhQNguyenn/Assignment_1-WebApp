@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
+    [Route("api/[controller]")]
+    [ApiController]
     public class ProductsController : ODataController
     {
         private readonly MyStoreContext _context;

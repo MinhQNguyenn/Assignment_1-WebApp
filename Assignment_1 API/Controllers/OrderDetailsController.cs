@@ -24,10 +24,10 @@ namespace Assignment_1_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails()
         {
-          if (_context.OrderDetails == null)
-          {
-              return NotFound();
-          }
+            if (_context.OrderDetails == null)
+            {
+                return NotFound();
+            }
             return await _context.OrderDetails.Include(o => o.Product).Include(o => o.Order).ThenInclude(o => o.Staff).ToListAsync();
         }
 
@@ -87,7 +87,7 @@ namespace Assignment_1_API.Controllers
         {
             if (_context.OrderDetails == null)
             {
-                return Problem("Entity set 'MyStore_G5Context.OrderDetails'  is null.");
+                return Problem("Entity set 'MyStoreContext.OrderDetails'  is null.");
             }
             _context.OrderDetails.Add(orderDetail);
             await _context.SaveChangesAsync();

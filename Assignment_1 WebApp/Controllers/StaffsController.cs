@@ -15,7 +15,7 @@ namespace Assignment_1WebApp.Controllers
 {
     public class StaffsController : Controller
     {
-        private readonly string _apiBaseUrl = "https://localhost:7271/odata/Staffs"; // Base URL of your API
+        private readonly string _apiBaseUrl = "https://localhost:7271/api/Staffs"; // Base URL of your API
         private readonly HttpClient client = null;
         private string StaffApiUrl = "";
         public StaffsController()

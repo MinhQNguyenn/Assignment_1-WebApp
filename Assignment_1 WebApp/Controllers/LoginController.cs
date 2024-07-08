@@ -11,35 +11,91 @@ namespace Assignment_1_WebApp.Controllers
         {
             return View();
         }
+        //[HttpPost]
+        //public async Task<IActionResult> Login(string username,string password) {
+        //    try
+        //    {
+        //        IConfiguration config = new ConfigurationBuilder()
+        //          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        //          .Build(); 
+        //        string odatafilter = $"?$filter=Name eq '{username}' and Password eq '{password}'";
+        //        var httpClient = new HttpClient();
+        //        var response = await httpClient.GetAsync("https://localhost:7271/api/Staffs"+ odatafilter);
+
+        //        string adminUsername = config["Account:Name"];
+        //        string adminPassword = config["Account:Password"];
+
+        //        if (adminUsername.Equals(username) && adminPassword.Equals(password))
+        //        {
+        //            HttpContext.Session.SetInt32("UserId", 0);
+        //            HttpContext.Session.SetInt32("UserRole", 1);
+        //            return RedirectToAction("Main", "Staffs", new Staff(0, adminUsername, adminPassword, 1));
+        //        }
+        //        if (response.IsSuccessStatusCode)
+        //        {
+
+        //            string strData = await response.Content.ReadAsStringAsync();
+        //            var temp = JObject.Parse(strData);
+        //            dynamic list = temp["value"];
+
+
+        //            List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
+        //            foreach (var item in staff)
+        //            {
+        //                if (username.Equals(item.Name) && password.Equals(item.Password))
+        //                {
+        //                    Console.WriteLine("duy");
+        //                    int role = item.Role;
+        //                    int id = item.StaffId;
+        //                    HttpContext.Session.SetInt32("UserId", id);
+        //                    HttpContext.Session.SetInt32("UserRole", role);
+        //                    return RedirectToAction("Main","Staffs", item);
+        //                    // 8. Redirect to Details action with StaffId
+        //                    return RedirectToAction("Details", "Staffs", new { id = id });
+        //                }
+
+
+        //            }
+        //            }
+
+        //        }
+
+
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //    return RedirectToAction("Index");
+
+        //}
+
         [HttpPost]
-        public async Task<IActionResult> Login(string username,string password) {
+        public async Task<IActionResult> Login(string username, string password)
+        {
             try
             {
                 IConfiguration config = new ConfigurationBuilder()
-      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-      .Build(); 
-                string odatafilter = $"?$filter=Name eq '{username}' and Password eq '{password}'";
-                var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync("https://localhost:7271/odata/Staffs"+ odatafilter);
-                
-                string adminUsername = config["Account:Name"];
-                string adminPassword = config["Account:Password"];
+                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                  .Build();
 
-                if (adminUsername.Equals(username) && adminPassword.Equals(password))
-                {
-                    HttpContext.Session.SetInt32("UserId", 0);
-                    HttpContext.Session.SetInt32("UserRole", 1);
-                    return RedirectToAction("Main", "Staffs", new Staff(0, adminUsername, adminPassword, 1));
-                }
+                var httpClient = new HttpClient();
+                var response = await httpClient.GetAsync("https://localhost:7271/api/Staffs");
                 if (response.IsSuccessStatusCode)
                 {
-                    
-                    string strData = await response.Content.ReadAsStringAsync();
-                    var temp = JObject.Parse(strData);
-                    dynamic list = temp["value"];
+                    var content = await response.Content.ReadAsStringAsync();
+                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(content);
 
-                 
-                    List<Staff> staff = JsonConvert.DeserializeObject<List<Staff>>(list.ToString());
+                    string adminUsername = config["Account:Name"];
+                    string adminPassword = config["Account:Password"];
+
+                    if (adminUsername.Equals(username) && adminPassword.Equals(password))
+                    {
+                        HttpContext.Session.SetInt32("UserId", 0);
+                        HttpContext.Session.SetInt32("UserRole", 1);
+                        return RedirectToAction("Main", "Staffs", new Staff(0, adminUsername, adminPassword, 1));
+                    }
+
                     foreach (var item in staff)
                     {
                         if (username.Equals(item.Name) && password.Equals(item.Password))
@@ -49,18 +105,18 @@ namespace Assignment_1_WebApp.Controllers
                             int id = item.StaffId;
                             HttpContext.Session.SetInt32("UserId", id);
                             HttpContext.Session.SetInt32("UserRole", role);
-                            return RedirectToAction("Main","Staffs", item);
+                            return RedirectToAction("Main", "Staffs", item);
                             // 8. Redirect to Details action with StaffId
                             return RedirectToAction("Details", "Staffs", new { id = id });
                         }
 
-                            
-                    }
-                    }
 
+                    }
                 }
-                
-            
+
+            }
+
+
             catch (Exception)
             {
 

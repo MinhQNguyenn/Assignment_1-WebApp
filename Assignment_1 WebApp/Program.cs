@@ -40,7 +40,7 @@ namespace Assignment_1_WebApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Orders}/{action=Index}/{id?}");
+                    pattern: "{controller=Login}/{action=Index}/{id?}");
             });
             app.UseAuthorization();
 

@@ -6,14 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment_1_API.Models;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
-    public class OrdersController : ODataController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class OrdersController : ControllerBase
     {
         private readonly MyStoreContext _context;
 
@@ -23,7 +21,6 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Orders
-        [EnableQuery]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
@@ -32,22 +29,23 @@ namespace Assignment_1_API.Controllers
                 return NotFound();
             }
             return await _context.Orders.Include(o => o.Staff).ToListAsync();
+            //return await _context.Orders.ToListAsync();
         }
         [HttpGet("/api/OrdersBySearch")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrdersBySearch([FromQuery] DateTime orderDate, [FromQuery] int staffId)
         {
-            await Console.Out.WriteLineAsync("orderDate: "+ orderDate);
+            await Console.Out.WriteLineAsync("orderDate: " + orderDate);
             if (_context.Orders == null)
             {
                 return NotFound();
             }
             // nếu k đổi sang tolist thì lỗi
-          var  orderList =  _context.Orders.Include(o=>o.Staff).ToList().Where(i => orderDate.ToShortDateString().Equals(i.OrderDate.ToShortDateString())&&i.StaffId==staffId);
+            var orderList = _context.Orders.Include(o => o.Staff).ToList().Where(i => orderDate.ToShortDateString().Equals(i.OrderDate.ToShortDateString()) && i.StaffId == staffId);
             //return await _context.Orders.Include(o => o.Staff).ToListAsync();
             return orderList.ToList();
         }
         // GET: api/Orders/5
-        [HttpGet("/odata/Orders/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
             if (_context.Orders == null)
@@ -69,7 +67,7 @@ namespace Assignment_1_API.Controllers
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id,[FromBody] Order order)
+        public async Task<IActionResult> PutOrder(int id, [FromBody] Order order)
         {
             if (id != order.OrderId)
             {
@@ -99,8 +97,8 @@ namespace Assignment_1_API.Controllers
 
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("/odata/Orderss")]
-        public async Task<ActionResult<Order>> PostOrder([FromBody] Order order)
+        [HttpPost]
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             if (_context.Orders == null)
             {
@@ -113,7 +111,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // DELETE: api/Orders/5
-        [HttpDelete("/odata/Orders/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             if (_context.Orders == null)
