@@ -68,20 +68,17 @@
 
             if (response.ok) {
                 const products = await response.json();
-                ////const products = data.value;
-                console.log(products);
-                console.log(data);
 
                 if (Array.isArray(products)) {
                     console.log("12");
                     products.forEach(item => {
                         let html = `<tr>
-                                        <td>${item.ProductName}</td>
-                                        <td>${item.UnitPrice}</td>
+                                        <td>${item.productName}</td>
+                                        <td>${item.unitPrice}</td>
                                         <td>
-                                            <a href='/Product/Details?id=${item.ProductId}'>Details</a>
-                                            <a href='/Product/Edit?id=${item.ProductId}'>Edit</a>
-                                            <a href='/Product/Delete?id=${item.ProductId}'>Delete</a>
+                                            <a href='/Product/Details?id=${item.productId}'>Details</a>
+                                            <a href='/Product/Edit?id=${item.productId}'>Edit</a>
+                                            <a href='/Product/Delete?id=${item.productId}'>Delete</a>
                                         </td>
                                     </tr>`;
                         tbody.innerHTML += html;
