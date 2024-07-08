@@ -38,7 +38,7 @@
                 return;
             }
 
-            fetch(`https://localhost:7271/odata/Products/${productId}`, {
+            fetch(`https://localhost:7271/api/Products/${productId}`, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json"
@@ -51,8 +51,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    document.getElementById("productName").textContent = data.ProductName;
-                    document.getElementById("unitPrice").textContent = data.UnitPrice;
+                    document.getElementById("productName").textContent = data.productName;
+                    document.getElementById("unitPrice").textContent = data.unitPrice;
                 })
                 .catch(error => {
                     console.error("Error fetching product details:", error);
@@ -61,7 +61,7 @@
             document.getElementById("Delete").addEventListener("click", function (event) {
                 event.preventDefault();
                 if (confirm("Are you sure you want to delete this product?")) {
-                    fetch(`https://localhost:7271/odata/Products/${productId}`, {
+                    fetch(`https://localhost:7271/api/Products/${productId}`, {
                         method: "DELETE",
                         headers: {
                             "Accept": "application/json"

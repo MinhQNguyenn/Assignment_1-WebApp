@@ -38,27 +38,72 @@
             event.preventDefault();
             const pName = document.getElementById("pName").value;
             const unitPrice = document.getElementById("unitPrice").value;
-            ShowProducts(pName, unitPrice);
+            SearchProducts(pName, unitPrice);
         });
 
         // Initial load without filters
         ShowProducts();
     });
-
-    async function ShowProducts(pName = '', unitPrice = '') {
+    async function SearchProducts(pName = '', unitPrice = '') {
         let tbody = document.querySelector("tbody");
         tbody.innerHTML = "";
 
         // Build the query string for OData
         let query = '';
         if (pName) {
-            query += `$filter=contains(ProductName,'${pName}')`;
+            query += `pName=${pName}`;
         }
         if (unitPrice) {
-            query += (query ? ' and ' : '$filter=') + `UnitPrice eq ${unitPrice}`;
+            query += (query ? '&' : '') + `unitPrice=${unitPrice}`;
         }
 
-        const apiUrl = `https://localhost:7271/api/Products${query ? '?' + query : ''}`;
+        console.log(query);
+
+        const apiUrl = `https://localhost:7271/api/Products/search?${query}`;
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const products = await response.json();
+
+                if (Array.isArray(products)) {
+                    console.log("12");
+                    products.forEach(item => {
+                        let html = `<tr>
+                                                <td>${item.productName}</td>
+                                                <td>${item.unitPrice}</td>
+                                                <td>
+                                                    <a href='/Product/Details?id=${item.productId}'>Details</a>
+                                                    <a href='/Product/Edit?id=${item.productId}'>Edit</a>
+                                                    <a href='/Product/Delete?id=${item.productId}'>Delete</a>
+                                                </td>
+                                            </tr>`;
+                        tbody.innerHTML += html;
+                    });
+
+                    document.getElementById("productCount").textContent = products.length;
+                } else {
+                    console.error('Unexpected data format', data);
+                    alert('Unexpected data format received from the server.');
+                }
+            } else {
+                console.error('Failed to load products');
+                alert('Failed to load products');
+            }
+        } catch (err) {
+            console.error('Fetch error', err);
+            alert('Error fetching data from the server.');
+        }
+    }
+    async function ShowProducts() {
+        let tbody = document.querySelector("tbody");
+        tbody.innerHTML = "";
+
+        const apiUrl = `https://localhost:7271/api/Products`;
         try {
             const response = await fetch(apiUrl, {
                 headers: {

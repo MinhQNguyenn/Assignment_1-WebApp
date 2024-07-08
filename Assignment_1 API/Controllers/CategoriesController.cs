@@ -10,8 +10,8 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace Assignment_1_API.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
+    [Route("api/[controller]")]
+    [ApiController]
     public class CategoriesController : ODataController
     {
         private readonly MyStoreContext _context;
@@ -33,7 +33,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Categories/5
-        [HttpGet("odata/Categories/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
             if (_context.Categories == null)
@@ -52,7 +52,7 @@ namespace Assignment_1_API.Controllers
 
         // PUT: api/Categories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("odata/Categories/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
             if (id != category.CategoryId)
@@ -97,7 +97,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // DELETE: api/Categories/5
-        [HttpDelete("odata/Categories/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             if (_context.Categories == null)

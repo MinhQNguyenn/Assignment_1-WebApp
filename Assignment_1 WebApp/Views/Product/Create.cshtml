@@ -47,7 +47,7 @@
         const createForm = document.getElementById("createForm");
 
         // Fetch categories and populate the select element
-        fetch("https://localhost:7271/odata/Categories", {
+        fetch("https://localhost:7271/api/Categories", {
             method: "GET",
             headers: {
                 "Accept": "application/json"
@@ -56,13 +56,13 @@
             .then(response => response.json())
             .then(data => {
                 const categorySelect = document.getElementById("CategoryId");
-                const categories = data.value;
+                const categories = data;
 
                 // Populate the select element with categories
                 categories.forEach(category => {
                     const option = document.createElement("option");
-                    option.value = category.CategoryId;
-                    option.textContent = category.CategoryName;
+                    option.value = category.categoryId;
+                    option.textContent = category.categoryName;
                     categorySelect.appendChild(option);
                 });
             })
@@ -81,7 +81,7 @@
                 UnitPrice: document.getElementById("UnitPrice").value
             };
 
-            fetch("https://localhost:7271/odata/Products", {
+            fetch("https://localhost:7271/api/Products", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

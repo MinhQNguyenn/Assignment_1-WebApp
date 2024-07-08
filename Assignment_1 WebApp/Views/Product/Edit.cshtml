@@ -58,7 +58,7 @@
 
             // Function to fetch categories and populate select list
             function fetchCategories() {
-                fetch("https://localhost:7271/odata/Categories", {
+                fetch("https://localhost:7271/api/Categories", {
                     method: "GET",
                     headers: {
                         "Accept": "application/json"
@@ -67,13 +67,13 @@
                     .then(response => response.json())
                     .then(data => {
                         const categorySelect = document.getElementById("CategoryId");
-                        const categories = data.value;
+                        const categories = data;
 
                         // Populate the select element with categories
                         categories.forEach(category => {
                             const option = document.createElement("option");
-                            option.value = category.CategoryId;
-                            option.textContent = category.CategoryName;
+                            option.value = category.categoryId;
+                            option.textContent = category.categoryName;
                             categorySelect.appendChild(option);
                         });
                     })
@@ -85,7 +85,7 @@
 
             // Function to fetch product details
             function fetchProduct() {
-                fetch(`https://localhost:7271/odata/Products/${productId}`) // Adjust URL as per your backend routing
+                fetch(`https://localhost:7271/api/Products/${productId}`) // Adjust URL as per your backend routing
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -94,10 +94,10 @@
                     })
                     .then(product => {
                         // Populate form fields with current product data
-                        document.getElementById("ProductName").value = product.ProductName;
-                        document.getElementById("UnitPrice").value = product.UnitPrice;
+                        document.getElementById("ProductName").value = product.productName;
+                        document.getElementById("UnitPrice").value = product.unitPrice;
                         // Optionally update CategoryId select box if needed
-                        document.getElementById("CategoryId").value = product.CategoryId;
+                        document.getElementById("CategoryId").value = product.categoryId;
                     })
                     .catch(error => {
                         console.error("Error fetching product details:", error);
@@ -114,7 +114,7 @@
                     UnitPrice: document.getElementById("UnitPrice").value
                 }
 
-                fetch(`https://localhost:7271/odata/Products/${productId}`,
+                fetch(`https://localhost:7271/api/Products/${productId}`,
                     {
                         method: "PUT",
                         headers: {

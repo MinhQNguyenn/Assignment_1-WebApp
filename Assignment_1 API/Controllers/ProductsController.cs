@@ -35,7 +35,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Products/5
-        [HttpGet("odata/Products/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             if (_context.Products == null)
@@ -54,7 +54,7 @@ namespace Assignment_1_API.Controllers
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("odata/Products/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id,[FromBody] Product product)
         {
             if (id != product.ProductId)
@@ -99,7 +99,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // DELETE: api/Products/5
-        [HttpDelete("odata/Products/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (_context.Products == null)
