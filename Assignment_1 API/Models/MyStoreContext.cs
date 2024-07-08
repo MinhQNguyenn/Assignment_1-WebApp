@@ -26,7 +26,7 @@ namespace Assignment_1_API.Models
         {
             var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyStoreDB"));
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyStore"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

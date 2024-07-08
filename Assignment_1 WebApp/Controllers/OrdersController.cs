@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -59,7 +60,8 @@ namespace Assignment1_ClientWebApp.Controllers
             };
             var myStore_G5Context = JsonSerializer.Deserialize<List<Order>>(strData, options);
 
-         
+            var orderList = JObject.Parse(strData)["value"].ToObject<List<Order>>();
+
             myStore_G5Context = myStore_G5Context.Where(i => startOrderDate.ToShortDateString().Trim().Equals(i.OrderDate.ToShortDateString().Trim())).ToList();
             ViewData["startOrderDate"] = startOrderDate;
             ViewData["endOrderDate"] = endOrderDate;
@@ -125,6 +127,7 @@ namespace Assignment1_ClientWebApp.Controllers
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{ApiUrl}{query}");
                 requestMessage.Content = new StringContent(dataString, Encoding.UTF8, "application/json");
                 HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+                ViewData["StaffId"] = order.StaffId;
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     // Xử lý response thành công

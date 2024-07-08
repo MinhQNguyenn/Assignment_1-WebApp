@@ -1,0 +1,41 @@
+﻿@model Assignment_1_API.Models.Staff
+
+@{
+    ViewData["Title"] = "Index";
+    
+
+
+}
+
+
+
+
+
+<h1>Hello @Model.Name</h1>
+@if (Model.Role == 1)
+{
+    <a asp-action="Index" asp-controller="Product">Manage Product</a> <br />
+    <a asp-action="Index" asp-controller="Staffs">Manage Staffs</a> <br />
+    <a asp-action="Index" asp-controller="Home">Report</a>
+    <br />
+    <a asp-action="Edit" asp-controller="Staffs" asp-route-id="@Model?.StaffId">Update Profile</a>
+    <br />
+}
+else
+{
+    <a asp-controller="Orders" asp-action="Index" asp-route-StaffId="@Model.StaffId">Manage Order</a>
+    <br />
+    <a asp-action="Index" asp-controller="Home">Report</a>
+    <br />
+    <a asp-action="Edit" asp-route-id="@Model?.StaffId">Update Profile</a>
+    <br />
+
+}
+
+    <a asp-action="Logout">Logout</a>
+
+
+
+
+
+</>

@@ -52,6 +52,7 @@ namespace Assignment1_ClientWebApp.Controllers
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", id);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             ViewData["SelectedId"] = id;
+            ViewData["StaffId"] = StaffId;
             return View();
         }
 
@@ -70,6 +71,7 @@ namespace Assignment1_ClientWebApp.Controllers
             }
             ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "OrderId", orderDetail.OrderId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", orderDetail.ProductId);
+            ViewData["StaffId"] = StaffId;
             return View(orderDetail);
         }
 
@@ -146,6 +148,7 @@ namespace Assignment1_ClientWebApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["StaffId"] = StaffId;
             ViewData["OrderId"] = orderId;
             return View(orderDetail);
         }
