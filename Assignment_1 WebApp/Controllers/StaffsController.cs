@@ -15,7 +15,7 @@ namespace Assignment_1WebApp.Controllers
 {
     public class StaffsController : Controller
     {
-        private readonly string _apiBaseUrl = "https://localhost:7271/api/Staffs"; // Base URL of your API
+        private readonly string _apiBaseUrl = "https://localhost:7271/odata/Staffs"; // Base URL of your API
         private readonly HttpClient client = null;
         private string StaffApiUrl = "";
         public StaffsController()
@@ -171,13 +171,13 @@ namespace Assignment_1WebApp.Controllers
         // POST: Staffs/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StaffId,Name,Password,Role")] Staff staff,string newpassword)
+        public async Task<IActionResult> Edit(int id, [Bind("StaffId,Name,Password,Role")] Staff staff, string newpassword)
         {
             if (id != staff.StaffId)
             {
                 return NotFound();
             }
-            if(newpassword.Equals(staff.Password))
+            if (newpassword.Equals(staff.Password))
             {
                 try
                 {
@@ -204,7 +204,7 @@ namespace Assignment_1WebApp.Controllers
             }
             return View(staff);
 
-           
+
         }
         public async Task<IActionResult> Logout()
         {

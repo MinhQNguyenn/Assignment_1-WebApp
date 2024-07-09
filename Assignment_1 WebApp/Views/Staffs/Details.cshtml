@@ -8,7 +8,7 @@
 
 <div>
     <h4>Staff</h4>
-   
+
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -30,12 +30,12 @@
             <input type="password" value=@Html.DisplayFor(model => model.Password) id="myInput">
             <input type="checkbox" onclick="myFunction()">
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
+        @* <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Role)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
+        @Html.DisplayFor(model => model.Role)
+        </dd> *@
     </dl>
 </div>
 
@@ -44,7 +44,7 @@
     <a asp-action="Edit" asp-route-id="@Model?.StaffId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
-    
+
 <script>
     function myFunction() {
         var x = document.getElementById("myInput");
@@ -52,5 +52,72 @@
             x.type = "text";
         } else {
             x.type = "password";
-    }
+        }
     }</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const createForm = document.getElementById("createForm");
+
+        // Fetch categories and populate the select element
+        fetch("https://localhost:7271/api/Categories", {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const categorySelect = document.getElementById("CategoryId");
+                const categories = data;
+
+                // Populate the select element with categories
+                categories.forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category.categoryId;
+                    option.textContent = category.categoryName;
+                    categorySelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching categories:", error);
+                alert("Error fetching categories. Please try again later.");
+            });
+
+        createForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const product = {
+                ProductId: 0,
+                ProductName: document.getElementById("ProductName").value,
+                CategoryId: document.getElementById("CategoryId").value,
+                UnitPrice: document.getElementById("UnitPrice").value
+            };
+
+            fetch("https://localhost:7271/api/Products", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(product)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.error.message || "Server error");
+                        });
+                    }
+                })
+                .then(data => {
+                    alert("Product created successfully!");
+                    window.location.href = "/Product";
+                })
+                .catch(error => {
+                    alert("Error creating product: " + error.message);
+                });
+        });
+    });</script>
