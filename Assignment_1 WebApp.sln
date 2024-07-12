@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assignment_1 WebApp", "Assignment_1 WebApp\Assignment_1 WebApp.csproj", "{E0AC3FA4-1619-40DE-8AA3-F65E9DB60BAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assignment_1 WebApp", "Assignment_1 WebApp\Assignment_1 WebApp.csproj", "{E0AC3FA4-1619-40DE-8AA3-F65E9DB60BAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assignment_1 API", "Assignment_1 API\Assignment_1 API.csproj", "{8841BF12-0789-43F3-981B-C249A373BEEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Assignment_1 API", "Assignment_1 API\Assignment_1 API.csproj", "{8841BF12-0789-43F3-981B-C249A373BEEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

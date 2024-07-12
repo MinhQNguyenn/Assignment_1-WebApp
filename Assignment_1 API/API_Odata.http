@@ -1,0 +1,7 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@API_Odata_HostAddress = http://localhost:5084
+
+GET {{API_Odata_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

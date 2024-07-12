@@ -1,6 +1,7 @@
 ﻿using Assignment_1_API.Models;
 using Assignment_1_WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -18,10 +19,11 @@ namespace Assignment_1_WebApp.Controllers
             this.client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ReportApiUrl = "https://localhost:7271/api/Report";
+            ReportApiUrl = "https://localhost:7271/odata/Report";
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
             ViewData["startDate"] = startDate?.ToString("yyyy-MM-dd");

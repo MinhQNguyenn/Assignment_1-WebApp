@@ -18,7 +18,7 @@ namespace Assignment_1_WebApp.Controllers
             ReportApiUrl = "https://localhost:7271/api/Report";
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Report()
         {
             HttpResponseMessage response = await client.GetAsync(ReportApiUrl);
             string strData = await response.Content.ReadAsStringAsync();

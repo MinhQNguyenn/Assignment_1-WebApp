@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Assignment_1_API.Models;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace Assignment_1_API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class StaffsController : ControllerBase
+    //[Route("api/[controller]")]
+    //[ApiController]
+    public class StaffsController : ODataController
     {
         private readonly MyStoreContext _context;
 
@@ -21,24 +23,26 @@ namespace Assignment_1_API.Controllers
         }
 
         // GET: api/Staffs
+        // (duc) can chu y o day
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<Staff>>> GetStaffs()
         {
-          if (_context.Staffs == null)
-          {
-              return NotFound();
-          }
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
             return await _context.Staffs.ToListAsync();
         }
 
         // GET: api/Staffs/5
-        [HttpGet("{id}")]
+        [HttpGet("odata/Staffs/{id}")]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
-          if (_context.Staffs == null)
-          {
-              return NotFound();
-          }
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
             var staff = await _context.Staffs.FindAsync(id);
 
             if (staff == null)
@@ -51,8 +55,10 @@ namespace Assignment_1_API.Controllers
 
         // PUT: api/Staffs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStaff(int id, Staff staff)
+        [HttpPut("odata/Staffs/{id}")]
+
+        public async Task<IActionResult> PutStaff(int id, [FromBody] Staff staff)
+
         {
             if (id != staff.StaffId)
             {
@@ -83,12 +89,12 @@ namespace Assignment_1_API.Controllers
         // POST: api/Staffs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Staff>> PostStaff(Staff staff)
+        public async Task<ActionResult<Staff>> PostStaff([FromBody] Staff staff)
         {
-          if (_context.Staffs == null)
-          {
-              return Problem("Entity set 'MyStoreContext.Staffs'  is null.");
-          }
+            if (_context.Staffs == null)
+            {
+                return Problem("Entity set 'MyStoreContext.Staffs'  is null.");
+            }
             _context.Staffs.Add(staff);
             await _context.SaveChangesAsync();
 
@@ -96,7 +102,7 @@ namespace Assignment_1_API.Controllers
         }
 
         // DELETE: api/Staffs/5
-        [HttpDelete("{id}")]
+        [HttpDelete("odata/Staffs/{id}")]
         public async Task<IActionResult> DeleteStaff(int id)
         {
             if (_context.Staffs == null)
@@ -116,6 +122,28 @@ namespace Assignment_1_API.Controllers
         }
 
         private bool StaffExists(int id)
+        {
+            return (_context.Staffs?.Any(e => e.StaffId == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Staff>>> Search([FromQuery] string pName)
+        {
+            if (_context.Staffs == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.Staffs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(pName))
+            {
+                query = query.Where(p => p.Name.Contains(pName));
+            }
+
+            return await query.ToListAsync();
+        }
+        private bool StaffsExists(int id)
         {
             return (_context.Staffs?.Any(e => e.StaffId == id)).GetValueOrDefault();
         }

@@ -1,0 +1,61 @@
+﻿@model Assignment_1_API.Models.Staff
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Staff</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" >
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="StaffId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label" hidden></label>
+                <input asp-for="Name" class="form-control" hidden />
+                <span asp-validation-for="Name" class="text-danger" hidden></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label" hidden></label>
+                <label  class="control-label">New Password</label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">ConfirmNewPassword</label>
+                <input class="control-label" type="text" name="newpassword"/>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+@if (@Model.Role == 1)
+{
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
+
+<script>
+    function validatePasswords() {
+        var newPassword = document.getElementById("NewPassword").value;
+        var confirmPassword = document.getElementById("ConfirmPassword").value;
+
+        if (newPassword !== confirmPassword) {
+            // Display an error message using JavaScript
+            document.getElementById("passwordError").innerHTML = "New password and confirm password do not match.";
+            return false; // Prevent form submission
+        }
+        return true; // Allow form submission
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

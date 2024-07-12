@@ -34,7 +34,7 @@ namespace Assignment_1_WebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
