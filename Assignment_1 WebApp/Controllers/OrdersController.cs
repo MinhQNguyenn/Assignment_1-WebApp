@@ -32,7 +32,7 @@ namespace Assignment1_ClientWebApp.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            //HttpContext.Session.SetInt32("UserId", 2);
+            HttpContext.Session.SetInt32("UserId", 2);
             string query = "Orders";
             HttpResponseMessage response = await client.GetAsync($"{ApiUrl}Orders");
             string strData = await response.Content.ReadAsStringAsync();
